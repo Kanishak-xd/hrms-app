@@ -1,0 +1,15 @@
+# Node
+node_modules/
+.env
+
+# Angular
+dist/
+.angular/
+client/node_modules/
+client/dist/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
