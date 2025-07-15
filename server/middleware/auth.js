@@ -14,7 +14,7 @@ const verifyToken = (req, res, next) => {
     };
 };
 
-const checlRole = (role) => (req, res, next) => {
+const checkRole = (role) => (req, res, next) => {
     if (req.user.role !== role)
         return res.status(403).json({message: "Access denied. No role"});
     next();
