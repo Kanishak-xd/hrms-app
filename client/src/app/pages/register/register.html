@@ -1,0 +1,89 @@
+<div class="min-h-screen flex p-8">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="w-4/11 rounded-lg p-6 mt-20 ml-30">
+        <h2 class="text-3xl font-bold text-gray-800 mb-7">Employee Registration</h2>
+
+        <div class="grid gap-4">
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">Full Name</label>
+                <input formControlName="fullName" type="text" class="form-input" />
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">Email</label>
+                <input formControlName="email" type="email" class="form-input" />
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">Password</label>
+                <input formControlName="password" type="password" class="form-input" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-8">
+                <div class="flex flex-col">
+                    <label class="text-sm font-medium text-neutral-700">Father's Name</label>
+                    <input formControlName="fatherName" type="text" class="form-input" />
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-sm font-medium text-neutral-700">Mother's Name</label>
+                    <input formControlName="motherName" type="text" class="form-input" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8">
+                <div class="flex flex-col">
+                    <label class="text-sm font-medium text-neutral-700">Date of Birth</label>
+                    <input formControlName="dob" type="date" class="form-input" />
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-sm font-medium text-neutral-700">Date of Joining</label>
+                    <input formControlName="dateOfJoining" type="date" class="form-input" />
+                </div>
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">Department</label>
+                <input formControlName="department" type="text" class="form-input" />
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">Designation</label>
+                <input formControlName="designation" type="text" class="form-input" />
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">PF Number</label>
+                <input formControlName="pfNumber" type="text" class="form-input" />
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">ESI Number</label>
+                <input formControlName="esiNumber" type="text" class="form-input" />
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">Bank Account No.</label>
+                <input formControlName="bankAccount" type="text" class="form-input" />
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">Bank Name</label>
+                <input formControlName="bankName" type="text" class="form-input" />
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">IFSC Code</label>
+                <input formControlName="ifscCode" type="text" class="form-input" />
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-sm font-medium text-neutral-700">Grade</label>
+                <input formControlName="grade" type="text" class="form-input" />
+            </div>
+        </div>
+
+        <button type="submit"
+            class="w-full bg-black text-white font-semibold py-3 px-4 mt-8 hover:cursor-pointer rounded hover:scale-101">
+            Submit for Approval
+        </button>
+    </form>
+</div>
