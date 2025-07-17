@@ -4,7 +4,9 @@ import { App } from './app/app';
 import { provideHttpClient } from '@angular/common/http';
 
 bootstrapApplication(App, {
+  ...appConfig,
   providers: [
+    ...appConfig.providers,
     provideHttpClient()
   ]
 });

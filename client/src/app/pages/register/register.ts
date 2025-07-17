@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './register.html',
-  styleUrl: './register.css'
+  styleUrls: ['./register.css']
 })
 export class Register {
   private fb = inject(FormBuilder);
@@ -20,14 +20,19 @@ export class Register {
   registerForm = this.fb.group({
     fullName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    phone: [''],
-    age: [''],
-    gender: [''],
-    bankAccountNumber: [''],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    fatherName: [''],
+    motherName: [''],
+    dob: [''],
+    dateOfJoining: [''],
+    department: [''],
+    designation: [''],
+    pfNumber: [''],
+    esiNumber: [''],
+    bankAccount: [''],
+    bankName: [''],
     ifscCode: [''],
-    panCardNumber: [''],
-    aadhaarCardNumber: [''],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    grade: ['']
   });
 
   onSubmit() {
