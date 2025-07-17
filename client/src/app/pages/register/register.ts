@@ -1,44 +1,52 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, signal, inject } from '@angular/core';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
 export class Register {
-  registerForm: FormGroup;
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
 
-  constructor(private fb: FormBuilder) {
-    this.registerForm = this.fb.group({
-      fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      fatherName: [''],
-      motherName: [''],
-      dob: [''],
-      dateOfJoining: [''],
-      department: [''],
-      designation: [''],
-      pfNumber: [''],
-      esiNumber: [''],
-      bankAccount: [''],
-      bankName: [''],
-      ifscCode: [''],
-      grade: [''],
-    });
-  }
+  successMessage = signal('');
+  errorMessage = signal('');
+
+  registerForm = this.fb.group({
+    fullName: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    phone: [''],
+    age: [''],
+    gender: [''],
+    bankAccountNumber: [''],
+    ifscCode: [''],
+    panCardNumber: [''],
+    aadhaarCardNumber: [''],
+    password: ['', [Validators.required, Validators.minLength(6)]]
+  });
 
   onSubmit() {
-    if (this.registerForm.valid) {
-      const formData = this.registerForm.value;
-      console.log('Form submitted:', formData);
-      // API call
-    } else {
-      console.log('Form is invalid');
+    if (this.registerForm.invalid) {
+      this.errorMessage.set('Please fill in all required fields');
+      return;
     }
+
+    this.authService.register(this.registerForm.value).subscribe({
+      next: () => {
+        this.successMessage.set('Registration successful!');
+        this.errorMessage.set('');
+        this.registerForm.reset();
+      },
+      error: (err) => {
+        this.errorMessage.set('Registration failed. Try again.');
+        this.successMessage.set('');
+        console.error(err);
+      }
+    });
   }
 }
