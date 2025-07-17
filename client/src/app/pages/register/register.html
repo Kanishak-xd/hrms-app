@@ -81,6 +81,9 @@
             </div>
         </div>
 
+        <div *ngIf="errorMessage()" class="text-red-500 text-sm mb-2">{{ errorMessage() }}</div>
+        <div *ngIf="successMessage()" class="text-green-500 text-sm mb-2">{{ successMessage() }}</div>
+
         <button type="submit"
             class="w-full bg-black text-white font-semibold py-3 px-4 mt-8 hover:cursor-pointer rounded hover:scale-101">
             Submit for Approval
