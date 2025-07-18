@@ -58,4 +58,12 @@ export class AuthService {
   getCurrentUser(): Observable<any> {
     return this.http.get('/api/me');
   }
+
+  getPendingUsers(): Observable<any[]> {
+    return this.http.get<any[]>('/api/pending');
+  }
+
+  updateUserStatus(userId: string, status: 'approved' | 'rejected') {
+    return this.http.patch(`/api/user/${userId}/status`, { status });
+  }
 }

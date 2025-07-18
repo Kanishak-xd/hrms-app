@@ -62,11 +62,11 @@ router.post("/login", async (req, res) => {
 });
 
 
-// GET /pending-users
-router.get("/pending-users", verifyToken, checkRole("hr"), async (req, res) => {
+// GET /pending
+router.get("/pending", verifyToken, checkRole("hr"), async (req, res) => {
   try {
-    const users = await User.find({ status: "pending" });
-    res.json(users);
+    const pendingUsers = await User.find({ status: 'pending' });
+    res.json(pendingUsers);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
@@ -89,7 +89,7 @@ router.patch("/user/:id/status", verifyToken, checkRole("hr"), async (req, res) 
   }
 });
 
-// Add this route
+// GET /me
 router.get("/me", verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
