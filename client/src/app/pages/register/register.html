@@ -1,5 +1,5 @@
-<div class="min-h-screen flex p-8">
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="w-4/11 rounded-lg p-6 mt-20 ml-30">
+<div class="min-h-screen flex p-8 justify-center items-center">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="w-4/11 rounded-lg p-6 mt-20">
         <h2 class="text-3xl font-bold text-gray-800 mb-7">Employee Registration</h2>
 
         <div class="grid gap-4">
@@ -88,5 +88,10 @@
             class="w-full bg-black text-white font-semibold py-3 px-4 mt-8 hover:cursor-pointer rounded hover:scale-101">
             Submit for Approval
         </button>
+
+        <p class="text-sm text-neutral-600 mt-4">
+            Already have an account?
+            <a routerLink="/login" class="text-blue-600 hover:underline hover:cursor-pointer">Log in</a>
+        </p>
     </form>
 </div>
