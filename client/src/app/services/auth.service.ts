@@ -54,4 +54,8 @@ export class AuthService {
       return null;
     }
   }
+
+  getCurrentUser(): Observable<any> {
+    return this.http.get('/api/me');
+  }
 }

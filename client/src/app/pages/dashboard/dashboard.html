@@ -1,6 +1,36 @@
-<div class="p-8">
-    <h1 class="text-3xl font-bold text-blue-700">Welcome to the Dashboard!</h1>
-    <p class="mt-4 text-lg text-gray-700">You are logged in</p>
+<div class="min-h-screen flex justify-center items-center flex-col">
+    <div class="p-8 w-full max-w-3xl bg-white shadow-xl rounded-2xl">
+        <h1 class="text-3xl font-bold text-neutral-800 mb-4">Welcome to the Dashboard!</h1>
 
-    <!-- Logout button will be added here in the next step -->
+        <ng-container *ngIf="user()?.status === 'approved'; else pendingApproval">
+            <div class="grid grid-cols-2 gap-4 text-gray-800">
+                <div><strong>Full Name:</strong> {{ user()?.fullName }}</div>
+                <div><strong>Email:</strong> {{ user()?.email }}</div>
+                <div><strong>Father's Name:</strong> {{ user()?.fatherName }}</div>
+                <div><strong>Mother's Name:</strong> {{ user()?.motherName }}</div>
+                <div><strong>Date of Birth:</strong> {{ user()?.dob }}</div>
+                <div><strong>Date of Joining:</strong> {{ user()?.dateOfJoining }}</div>
+                <div><strong>Department:</strong> {{ user()?.department }}</div>
+                <div><strong>Designation:</strong> {{ user()?.designation }}</div>
+                <div><strong>PF Number:</strong> {{ user()?.pfNumber }}</div>
+                <div><strong>ESI Number:</strong> {{ user()?.esiNumber }}</div>
+                <div><strong>Bank Account:</strong> {{ user()?.bankAccount }}</div>
+                <div><strong>Bank Name:</strong> {{ user()?.bankName }}</div>
+                <div><strong>IFSC Code:</strong> {{ user()?.ifscCode }}</div>
+                <div><strong>Grade:</strong> {{ user()?.grade }}</div>
+            </div>
+            <button
+                class="bg-red-500 text-xl hover:bg-red-600 text-white mt-5 px-6 pb-2 pt-1 rounded-lg shadow hover:cursor-pointer"
+                (click)="logout()">
+                Logout
+            </button>
+        </ng-container>
+
+        <ng-template #pendingApproval>
+            <div class="text-yellow-700 font-medium">
+                Your account is still pending approval by HR. Please check back later.
+            </div>
+        </ng-template>
+
+    </div>
 </div>
