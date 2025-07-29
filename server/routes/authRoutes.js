@@ -2,6 +2,9 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Company = require('../models/Company');
+const Department = require('../models/Department');
+const Designation = require('../models/Designation');
 
 const router = express.Router();
 const { verifyToken, checkRole } = require('../middleware/auth');
@@ -69,6 +72,34 @@ router.get("/pending", verifyToken, checkRole("hr"), async (req, res) => {
     res.json(pendingUsers);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// GET /companies
+router.get('/companies', async (req, res) => {
+  try {
+    const companies = await Company.find({}, 'registrationNumber name address city district country');
+    res.json(companies);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+// GET /departments
+router.get('/departments', async (req, res) => {
+  try {
+    const departments = await Department.find({ status: 'active' });
+    res.json(departments);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+// GET /designations
+router.get('/designations', async (req, res) => {
+  try {
+    const designations = await Designation.find({ status: 'active' });
+    res.json(designations);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

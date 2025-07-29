@@ -12,6 +12,8 @@
         <div *ngFor="let user of pendingUsers" class="border p-4 rounded shadow bg-white">
             <p><strong>Name:</strong> {{ user.fullName }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Department:</strong> {{ user.department }}</p>
+            <p><strong>Designation:</strong> {{ user.designation }}</p>
 
             <div class="mt-4 space-x-2">
                 <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"

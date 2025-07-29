@@ -66,4 +66,16 @@ export class AuthService {
   updateUserStatus(userId: string, status: 'approved' | 'rejected') {
     return this.http.patch(`/api/user/${userId}/status`, { status });
   }
+
+  getCompanies(): Observable<any[]> {
+    return this.http.get<any[]>('/api/companies');
+  }
+
+  getDepartments(): Observable<any[]> {
+    return this.http.get<any[]>('/api/departments');
+  }
+
+  getDesignations(): Observable<any[]> {
+    return this.http.get<any[]>('/api/designations');
+  }
 }

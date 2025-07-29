@@ -18,6 +18,13 @@ export class Register {
   successMessage = signal('');
   errorMessage = signal('');
 
+  departments = ['DEPT01', 'DEPT02', 'DEPT03'];
+  designations = ['DSG01', 'DSG02', 'DSG03'];
+
+  constructor() {
+    // Removed backend calls for departments and designations
+  }
+
   registerForm = this.fb.group({
     fullName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
@@ -26,8 +33,8 @@ export class Register {
     motherName: [''],
     dob: [''],
     dateOfJoining: [''],
-    department: [''],
-    designation: [''],
+    department: ['', Validators.required],
+    designation: ['', Validators.required],
     pfNumber: [''],
     esiNumber: [''],
     bankAccount: [''],

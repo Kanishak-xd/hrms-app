@@ -40,14 +40,20 @@
                 </div>
             </div>
 
+            <!-- Company dropdown removed: single company system -->
             <div class="flex flex-col">
                 <label class="text-sm font-medium text-neutral-700">Department</label>
-                <input formControlName="department" type="text" class="form-input" />
+                <select formControlName="department" class="form-input">
+                    <option value="">Select Department</option>
+                    <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
+                </select>
             </div>
-
             <div class="flex flex-col">
                 <label class="text-sm font-medium text-neutral-700">Designation</label>
-                <input formControlName="designation" type="text" class="form-input" />
+                <select formControlName="designation" class="form-input">
+                    <option value="">Select Designation</option>
+                    <option *ngFor="let dsg of designations" [value]="dsg">{{ dsg }}</option>
+                </select>
             </div>
 
             <div class="flex flex-col">

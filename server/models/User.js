@@ -6,7 +6,9 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ["admin", "hr", "employee"], default: "employee" },
   fatherName: String, motherName: String, dob: Date, dateOfJoining: Date,
-  department: String, designation: String, pfNumber: String, esiNumber: String,
+  department: { type: String, required: true },
+  designation: { type: String, required: true },
+  pfNumber: String, esiNumber: String,
   bankAccount: String, bankName: String, ifscCode: String, grade: String,
 
   // approval status
