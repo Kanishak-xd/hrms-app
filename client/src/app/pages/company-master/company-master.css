@@ -1,0 +1,33 @@
+/* Company Master Styles */
+.input-field:read-only {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+.input-field:not(:read-only) {
+    background-color: white;
+    cursor: text;
+}
+
+/* Modal overlay styles */
+.modal-overlay {
+    backdrop-filter: blur(4px);
+}
+
+/* Table responsive styles */
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: auto;
+    }
+}
+
+/* Status badge styles */
+.status-active {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.status-inactive {
+    background-color: #fef2f2;
+    color: #dc2626;
+}

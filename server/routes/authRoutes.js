@@ -75,16 +75,6 @@ router.get("/pending", verifyToken, checkRole("hr"), async (req, res) => {
   }
 });
 
-// GET /companies
-router.get('/companies', async (req, res) => {
-  try {
-    const companies = await Company.find({}, 'registrationNumber name address city district country');
-    res.json(companies);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
 // GET /employees - Get all employees for Employee Master
 router.get("/employees", verifyToken, checkRole("hr"), async (req, res) => {
   try {
@@ -347,6 +337,125 @@ router.patch("/designations/:id/status", verifyToken, checkRole("hr"), async (re
     await designation.save();
 
     res.json(designation);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ==================== COMPANY ENDPOINTS ====================
+
+// GET /companies - Get all companies
+router.get("/companies", verifyToken, checkRole("admin"), async (req, res) => {
+  try {
+    const companies = await Company.find().sort({ companyCode: 1 });
+    res.json(companies);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// POST /companies - Create new company
+router.post("/companies", verifyToken, checkRole("admin"), async (req, res) => {
+  const { companyCode, companyName, email, phone, address, city, state, country, pincode, gstNumber, panNumber, dateOfIncorporation, status } = req.body;
+
+  try {
+    // Check if company code already exists
+    const existingCompany = await Company.findOne({ companyCode });
+    if (existingCompany) {
+      return res.status(400).json({ message: "Company code already exists" });
+    }
+
+    const newCompany = new Company({
+      companyCode,
+      companyName,
+      email,
+      phone,
+      address,
+      city,
+      state,
+      country,
+      pincode,
+      gstNumber,
+      panNumber,
+      dateOfIncorporation: new Date(dateOfIncorporation),
+      status: status || 'active',
+      createdBy: req.user.id
+    });
+
+    await newCompany.save();
+    res.status(201).json(newCompany);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// PUT /companies/:id - Update company
+router.put("/companies/:id", verifyToken, checkRole("admin"), async (req, res) => {
+  const { id } = req.params;
+  const { companyName, email, phone, address, city, state, country, pincode, gstNumber, panNumber, dateOfIncorporation, status } = req.body;
+
+  try {
+    const updatedCompany = await Company.findByIdAndUpdate(
+      id,
+      { 
+        companyName, 
+        email, 
+        phone, 
+        address, 
+        city, 
+        state, 
+        country, 
+        pincode, 
+        gstNumber, 
+        panNumber, 
+        dateOfIncorporation: new Date(dateOfIncorporation), 
+        status, 
+        updatedOn: new Date() 
+      },
+      { new: true }
+    );
+
+    if (!updatedCompany) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    res.json(updatedCompany);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// DELETE /companies/:id - Delete company
+router.delete("/companies/:id", verifyToken, checkRole("admin"), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const company = await Company.findByIdAndDelete(id);
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    res.json({ message: "Company deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// PATCH /companies/:id/status - Toggle company status
+router.patch("/companies/:id/status", verifyToken, checkRole("admin"), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const company = await Company.findById(id);
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    company.status = company.status === 'active' ? 'inactive' : 'active';
+    company.updatedOn = new Date();
+    await company.save();
+
+    res.json(company);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }

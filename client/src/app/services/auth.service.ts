@@ -84,6 +84,22 @@ export class AuthService {
     return this.http.get<any[]>('/api/companies');
   }
 
+  createCompany(companyData: any): Observable<any> {
+    return this.http.post('/api/companies', companyData);
+  }
+
+  updateCompany(companyId: string, companyData: any): Observable<any> {
+    return this.http.put(`/api/companies/${companyId}`, companyData);
+  }
+
+  deleteCompany(companyId: string): Observable<any> {
+    return this.http.delete(`/api/companies/${companyId}`);
+  }
+
+  toggleCompanyStatus(companyId: string): Observable<any> {
+    return this.http.patch(`/api/companies/${companyId}/status`, {});
+  }
+
   // ==================== DEPARTMENT METHODS ====================
 
   getDepartments(): Observable<any[]> {
