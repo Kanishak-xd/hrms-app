@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ["admin", "hr", "employee"], default: "employee" },
   fatherName: String, motherName: String, dob: Date, dateOfJoining: Date,
-  department: { type: String, required: true },
-  designation: { type: String, required: true },
+  department: { type: String, required: false }, // Made optional
+  designation: { type: String, required: false }, // Made optional
   pfNumber: String, esiNumber: String,
   bankAccount: String, bankName: String, ifscCode: String, grade: String,
 

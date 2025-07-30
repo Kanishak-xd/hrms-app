@@ -85,6 +85,21 @@ router.get("/employees", verifyToken, checkRole("hr"), async (req, res) => {
   }
 });
 
+// GET /employees/count - Get employee count for dashboard (HR and Admin)
+router.get("/employees/count", verifyToken, async (req, res) => {
+  try {
+    // Check if user is HR or Admin
+    if (req.user.role !== 'hr' && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    
+    const employeeCount = await User.countDocuments({});
+    res.json({ count: employeeCount });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // PUT /employee/:id - Update employee data
 router.put("/employee/:id", verifyToken, checkRole("hr"), async (req, res) => {
   const { id } = req.params;

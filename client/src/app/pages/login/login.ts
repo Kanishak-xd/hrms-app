@@ -40,6 +40,10 @@ export class Login {
       next: (response) => {
         console.log('Login successful:', response);
         this.errorMessage.set('');
+
+        // Dispatch custom event to notify sidebar about login
+        window.dispatchEvent(new CustomEvent('userLoggedIn'));
+
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {

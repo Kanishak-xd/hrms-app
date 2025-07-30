@@ -14,10 +14,12 @@ export class Dashboard implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   user = signal<any>(null);
+  userRole = signal<string | null>(null);
 
   // Dashboard stats
   totalEmployees = signal<number>(0);
   activeDepartments = signal<number>(0);
+  totalDesignations = signal<number>(0);
   pendingApprovals = signal<number>(0);
   totalCompanies = signal<number>(0);
   loading = signal<boolean>(true);
@@ -29,24 +31,39 @@ export class Dashboard implements OnInit {
 
   loadCurrentUser(): void {
     this.authService.getCurrentUser().subscribe({
-      next: user => this.user.set(user),
-      error: err => this.user.set(null)
+      next: user => {
+        this.user.set(user);
+        this.userRole.set(user?.role || null);
+      },
+      error: err => {
+        this.user.set(null);
+        this.userRole.set(null);
+      }
     });
   }
 
   loadDashboardData(): void {
     this.loading.set(true);
 
-    // Load employees count
-    this.authService.getAllEmployees().subscribe({
-      next: (employees) => {
-        this.totalEmployees.set(employees.length);
-        // Count pending approvals
-        const pending = employees.filter(emp => emp.status === 'pending').length;
-        this.pendingApprovals.set(pending);
+    // Load employees count - works for both HR and Admin
+    this.authService.getEmployeeCount().subscribe({
+      next: (response) => {
+        this.totalEmployees.set(response.count);
       },
       error: (err) => {
-        console.error('Error loading employees:', err);
+        console.error('Error loading employee count:', err);
+        // Fallback to getAllEmployees if count endpoint fails
+        this.authService.getAllEmployees().subscribe({
+          next: (employees) => {
+            this.totalEmployees.set(employees.length);
+            // Count pending approvals
+            const pending = employees.filter(emp => emp.status === 'pending').length;
+            this.pendingApprovals.set(pending);
+          },
+          error: (err2) => {
+            console.error('Error loading employees:', err2);
+          }
+        });
       }
     });
 
@@ -58,6 +75,16 @@ export class Dashboard implements OnInit {
       },
       error: (err) => {
         console.error('Error loading departments:', err);
+      }
+    });
+
+    // Load designations count
+    this.authService.getDesignations().subscribe({
+      next: (designations) => {
+        this.totalDesignations.set(designations.length);
+      },
+      error: (err) => {
+        console.error('Error loading designations:', err);
       }
     });
 
@@ -84,5 +111,31 @@ export class Dashboard implements OnInit {
 
   navigateTo(route: string): void {
     this.router.navigate([route]);
+  }
+
+  // Role-based access control methods
+  canAccessEmployeeMaster(): boolean {
+    const role = this.userRole();
+    return role === 'hr'; // Only HR users can access employee master
+  }
+
+  canAccessDepartmentMaster(): boolean {
+    const role = this.userRole();
+    return role === 'hr' || role === 'admin';
+  }
+
+  canAccessDesignationMaster(): boolean {
+    const role = this.userRole();
+    return role === 'hr' || role === 'admin';
+  }
+
+  canAccessCompanyMaster(): boolean {
+    const role = this.userRole();
+    return role === 'admin';
+  }
+
+  canAccessHrPanel(): boolean {
+    const role = this.userRole();
+    return role === 'hr'; // Only HR users can access HR panel
   }
 }

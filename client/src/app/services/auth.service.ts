@@ -21,6 +21,8 @@ export class AuthService {
         if (res.token) {
           localStorage.setItem('token', res.token);
           this.tokenSignal.set(res.token);
+          // Dispatch event to notify components about login
+          window.dispatchEvent(new CustomEvent('userLoggedIn'));
         }
       })
     );
@@ -146,6 +148,10 @@ export class AuthService {
 
   getAllEmployees(): Observable<any[]> {
     return this.http.get<any[]>('/api/employees');
+  }
+
+  getEmployeeCount(): Observable<any> {
+    return this.http.get<any>('/api/employees/count');
   }
 
   updateEmployee(employeeId: string, employeeData: any): Observable<any> {

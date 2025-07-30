@@ -1,6 +1,14 @@
-<div class="min-h-screen flex p-8 justify-center items-center">
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="w-4/11 rounded-lg p-6 mt-20">
+<div class="flex p-8 justify-center items-center">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="w-4/11 rounded-lg p-6">
         <h2 class="text-3xl font-bold text-gray-800 mb-7">Employee Registration</h2>
+
+        <!-- Loading State -->
+        <div *ngIf="loading()" class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+            <div class="flex items-center">
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <span class="ml-2 text-blue-600">Processing registration...</span>
+            </div>
+        </div>
 
         <div class="grid gap-4">
             <div class="flex flex-col">
@@ -40,20 +48,27 @@
                 </div>
             </div>
 
-            <!-- Company dropdown removed: single company system -->
+            <!-- Department and Designation - Optional during registration -->
             <div class="flex flex-col">
-                <label class="text-sm font-medium text-neutral-700">Department</label>
+                <label class="text-sm font-medium text-neutral-700">Department (Optional)</label>
                 <select formControlName="department" class="form-input">
-                    <option value="">Select Department</option>
-                    <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
+                    <option value="">Select Department (Optional)</option>
+                    <option *ngFor="let dept of departments()" [value]="dept.departmentName">
+                        {{ dept.departmentName }}
+                    </option>
                 </select>
+                <p class="text-xs text-gray-500 mt-1">Department can be assigned later by admin</p>
             </div>
+
             <div class="flex flex-col">
-                <label class="text-sm font-medium text-neutral-700">Designation</label>
+                <label class="text-sm font-medium text-neutral-700">Designation (Optional)</label>
                 <select formControlName="designation" class="form-input">
-                    <option value="">Select Designation</option>
-                    <option *ngFor="let dsg of designations" [value]="dsg">{{ dsg }}</option>
+                    <option value="">Select Designation (Optional)</option>
+                    <option *ngFor="let desig of designations()" [value]="desig.designationName">
+                        {{ desig.designationName }}
+                    </option>
                 </select>
+                <p class="text-xs text-gray-500 mt-1">Designation can be assigned later by admin</p>
             </div>
 
             <div class="flex flex-col">
@@ -90,9 +105,9 @@
         <div *ngIf="errorMessage()" class="text-red-500 text-sm mb-2">{{ errorMessage() }}</div>
         <div *ngIf="successMessage()" class="text-green-500 text-sm mb-2">{{ successMessage() }}</div>
 
-        <button type="submit"
-            class="w-full bg-black text-white font-semibold py-3 px-4 mt-8 hover:cursor-pointer rounded hover:scale-101">
-            Submit for Approval
+        <button type="submit" [disabled]="loading()"
+            class="w-full bg-black text-white font-semibold py-3 px-4 mt-8 hover:cursor-pointer rounded hover:scale-101 disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ loading() ? 'Submitting...' : 'Submit for Approval' }}
         </button>
 
         <p class="text-sm text-neutral-600 mt-4">
