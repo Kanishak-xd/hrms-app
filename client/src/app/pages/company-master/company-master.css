@@ -2,6 +2,7 @@
 .input-field:read-only {
     background-color: #f3f4f6;
     cursor: not-allowed;
+    min-width: 200px;
 }
 
 .input-field:not(:read-only) {

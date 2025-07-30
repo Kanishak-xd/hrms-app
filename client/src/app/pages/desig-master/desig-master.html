@@ -102,7 +102,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <select [(ngModel)]="desig.departmentId" [disabled]="!desig.isEditing"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     [class.bg-gray-100]="!desig.isEditing">
                                     <option *ngFor="let dept of activeDepartments()" [value]="dept.departmentId">
                                         {{ dept.departmentName }}
