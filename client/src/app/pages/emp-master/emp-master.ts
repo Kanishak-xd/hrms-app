@@ -38,6 +38,10 @@ export class EmpMasterComponent implements OnInit {
     filterDob = signal<string>('');
     filterDateOfJoining = signal<string>('');
 
+    // Department and Designation data
+    departments = signal<any[]>([]);
+    designations = signal<any[]>([]);
+
     // Computed filtered employees
     filteredEmployees = computed(() => {
         let employees = this.employees();
@@ -132,6 +136,30 @@ export class EmpMasterComponent implements OnInit {
     ngOnInit(): void {
         this.checkUserRole();
         this.loadEmployees();
+        this.loadDepartments();
+        this.loadDesignations();
+    }
+
+    loadDepartments(): void {
+        this.authService.getDepartments().subscribe({
+            next: (departments) => {
+                this.departments.set(departments);
+            },
+            error: (err) => {
+                console.error('Failed to load departments:', err);
+            }
+        });
+    }
+
+    loadDesignations(): void {
+        this.authService.getDesignations().subscribe({
+            next: (designations) => {
+                this.designations.set(designations);
+            },
+            error: (err) => {
+                console.error('Failed to load designations:', err);
+            }
+        });
     }
 
     checkUserRole(): void {

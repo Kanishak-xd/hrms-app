@@ -1,6 +1,6 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -45,14 +45,27 @@ export class AuthService {
   // Get role or user info from token
   getUserRole(): string | null {
     const token = this.getToken();
-    if (!token) return null;
+    if (!token) {
+      console.log('No token found');
+      return null;
+    }
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log('Decoded token payload:', payload);
       return payload.role || null;
     } catch (e) {
+      console.error('Error decoding token:', e);
       return null;
     }
+  }
+
+  // Alternative method to get user role from API
+  getUserRoleFromAPI(): Observable<string | null> {
+    return this.http.get<any>('/api/me').pipe(
+      tap(user => console.log('Current user from API:', user)),
+      map(user => user?.role || null)
+    );
   }
 
   getCurrentUser(): Observable<any> {
@@ -71,12 +84,48 @@ export class AuthService {
     return this.http.get<any[]>('/api/companies');
   }
 
+  // ==================== DEPARTMENT METHODS ====================
+
   getDepartments(): Observable<any[]> {
     return this.http.get<any[]>('/api/departments');
   }
 
+  createDepartment(departmentData: any): Observable<any> {
+    return this.http.post('/api/departments', departmentData);
+  }
+
+  updateDepartment(departmentId: string, departmentData: any): Observable<any> {
+    return this.http.put(`/api/departments/${departmentId}`, departmentData);
+  }
+
+  deleteDepartment(departmentId: string): Observable<any> {
+    return this.http.delete(`/api/departments/${departmentId}`);
+  }
+
+  toggleDepartmentStatus(departmentId: string): Observable<any> {
+    return this.http.patch(`/api/departments/${departmentId}/status`, {});
+  }
+
+  // ==================== DESIGNATION METHODS ====================
+
   getDesignations(): Observable<any[]> {
     return this.http.get<any[]>('/api/designations');
+  }
+
+  createDesignation(designationData: any): Observable<any> {
+    return this.http.post('/api/designations', designationData);
+  }
+
+  updateDesignation(designationId: string, designationData: any): Observable<any> {
+    return this.http.put(`/api/designations/${designationId}`, designationData);
+  }
+
+  deleteDesignation(designationId: string): Observable<any> {
+    return this.http.delete(`/api/designations/${designationId}`);
+  }
+
+  toggleDesignationStatus(designationId: string): Observable<any> {
+    return this.http.patch(`/api/designations/${designationId}/status`, {});
   }
 
   getAllEmployees(): Observable<any[]> {

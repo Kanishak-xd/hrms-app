@@ -45,180 +45,177 @@
                     </div>
                 </div>
 
-                <!-- Table -->
-                <div class="overflow-x-auto">
-                    <!-- Filter section -->
-                    <div class="p-6 border-b border-gray-200">
-                        <!-- Global Search -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Global Search:</label>
-                            <input type="text" [ngModel]="globalSearch()" (ngModelChange)="globalSearch.set($event)"
-                                placeholder="Search across all fields..."
+                <!-- Filter section -->
+                <div class="p-6 border-b border-gray-200">
+                    <!-- Global Search -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Global Search:</label>
+                        <input type="text" [ngModel]="globalSearch()" (ngModelChange)="globalSearch.set($event)"
+                            placeholder="Search across all fields..."
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Filters Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                        <!-- Name Sort -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Name Sort:</label>
+                            <select [ngModel]="nameSort()" (ngModelChange)="nameSort.set($event)"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">No Sort</option>
+                                <option value="asc">A to Z</option>
+                                <option value="desc">Z to A</option>
+                            </select>
+                        </div>
+
+                        <!-- Email Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email:</label>
+                            <input type="text" [ngModel]="filterEmail()" (ngModelChange)="filterEmail.set($event)"
+                                placeholder="Filter by email..."
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- Filters Grid -->
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                            <!-- Name Sort -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Name Sort:</label>
-                                <select [ngModel]="nameSort()" (ngModelChange)="nameSort.set($event)"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">No Sort</option>
-                                    <option value="asc">A to Z</option>
-                                    <option value="desc">Z to A</option>
-                                </select>
-                            </div>
-
-                            <!-- Email Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Email:</label>
-                                <input type="text" [ngModel]="filterEmail()" (ngModelChange)="filterEmail.set($event)"
-                                    placeholder="Filter by email..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- Role Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Role:</label>
-                                <select [ngModel]="filterRole()" (ngModelChange)="filterRole.set($event)"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">All</option>
-                                    <option value="employee">Employee</option>
-                                    <option value="hr">HR</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
-
-                            <!-- Department Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Department:</label>
-                                <select [ngModel]="filterDepartment()" (ngModelChange)="filterDepartment.set($event)"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">All</option>
-                                    <option value="DEPT01">DEPT01</option>
-                                    <option value="DEPT02">DEPT02</option>
-                                    <option value="DEPT03">DEPT03</option>
-                                </select>
-                            </div>
-
-                            <!-- Designation Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Designation:</label>
-                                <select [ngModel]="filterDesignation()" (ngModelChange)="filterDesignation.set($event)"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">All</option>
-                                    <option value="DSG01">DSG01</option>
-                                    <option value="DSG02">DSG02</option>
-                                    <option value="DSG03">DSG03</option>
-                                </select>
-                            </div>
-
-                            <!-- Status Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Status:</label>
-                                <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">All</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="approved">Approved</option>
-                                    <option value="rejected">Rejected</option>
-                                </select>
-                            </div>
-
-                            <!-- Grade Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Grade:</label>
-                                <input type="text" [ngModel]="filterGrade()" (ngModelChange)="filterGrade.set($event)"
-                                    placeholder="Filter by grade..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- PF Number Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">PF Number:</label>
-                                <input type="text" [ngModel]="filterPfNumber()"
-                                    (ngModelChange)="filterPfNumber.set($event)" placeholder="Filter by PF number..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- ESI Number Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">ESI Number:</label>
-                                <input type="text" [ngModel]="filterEsiNumber()"
-                                    (ngModelChange)="filterEsiNumber.set($event)" placeholder="Filter by ESI number..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- Bank Account Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Bank Account:</label>
-                                <input type="text" [ngModel]="filterBankAccount()"
-                                    (ngModelChange)="filterBankAccount.set($event)"
-                                    placeholder="Filter by bank account..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- Bank Name Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Bank Name:</label>
-                                <input type="text" [ngModel]="filterBankName()"
-                                    (ngModelChange)="filterBankName.set($event)" placeholder="Filter by bank name..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- IFSC Code Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">IFSC Code:</label>
-                                <input type="text" [ngModel]="filterIfscCode()"
-                                    (ngModelChange)="filterIfscCode.set($event)" placeholder="Filter by IFSC code..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- Father's Name Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Father's Name:</label>
-                                <input type="text" [ngModel]="filterFatherName()"
-                                    (ngModelChange)="filterFatherName.set($event)"
-                                    placeholder="Filter by father's name..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- Mother's Name Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Mother's Name:</label>
-                                <input type="text" [ngModel]="filterMotherName()"
-                                    (ngModelChange)="filterMotherName.set($event)"
-                                    placeholder="Filter by mother's name..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- Date of Birth Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth:</label>
-                                <input type="text" [ngModel]="filterDob()" (ngModelChange)="filterDob.set($event)"
-                                    placeholder="Filter by DOB..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- Date of Joining Filter -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Date of Joining:</label>
-                                <input type="text" [ngModel]="filterDateOfJoining()"
-                                    (ngModelChange)="filterDateOfJoining.set($event)"
-                                    placeholder="Filter by joining date..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
+                        <!-- Role Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Role:</label>
+                            <select [ngModel]="filterRole()" (ngModelChange)="filterRole.set($event)"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All</option>
+                                <option value="employee">Employee</option>
+                                <option value="hr">HR</option>
+                                <option value="admin">Admin</option>
+                            </select>
                         </div>
 
-                        <!-- Clear Filters Button -->
-                        <div class="mt-4">
-                            <button (click)="clearAllFilters()"
-                                class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                                Clear All Filters
-                            </button>
+                        <!-- Department Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Department:</label>
+                            <select [ngModel]="filterDepartment()" (ngModelChange)="filterDepartment.set($event)"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All</option>
+                                <option *ngFor="let dept of departments()" [value]="dept.departmentId">
+                                    {{ dept.departmentName }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Designation Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Designation:</label>
+                            <select [ngModel]="filterDesignation()" (ngModelChange)="filterDesignation.set($event)"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All</option>
+                                <option *ngFor="let desig of designations()" [value]="desig.designationId">
+                                    {{ desig.designationName }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status:</label>
+                            <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+
+                        <!-- Grade Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Grade:</label>
+                            <input type="text" [ngModel]="filterGrade()" (ngModelChange)="filterGrade.set($event)"
+                                placeholder="Filter by grade..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- PF Number Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">PF Number:</label>
+                            <input type="text" [ngModel]="filterPfNumber()" (ngModelChange)="filterPfNumber.set($event)"
+                                placeholder="Filter by PF number..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- ESI Number Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ESI Number:</label>
+                            <input type="text" [ngModel]="filterEsiNumber()"
+                                (ngModelChange)="filterEsiNumber.set($event)" placeholder="Filter by ESI number..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Bank Account Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Bank Account:</label>
+                            <input type="text" [ngModel]="filterBankAccount()"
+                                (ngModelChange)="filterBankAccount.set($event)" placeholder="Filter by bank account..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Bank Name Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Bank Name:</label>
+                            <input type="text" [ngModel]="filterBankName()" (ngModelChange)="filterBankName.set($event)"
+                                placeholder="Filter by bank name..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- IFSC Code Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">IFSC Code:</label>
+                            <input type="text" [ngModel]="filterIfscCode()" (ngModelChange)="filterIfscCode.set($event)"
+                                placeholder="Filter by IFSC code..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Father's Name Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Father's Name:</label>
+                            <input type="text" [ngModel]="filterFatherName()"
+                                (ngModelChange)="filterFatherName.set($event)" placeholder="Filter by father's name..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Mother's Name Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Mother's Name:</label>
+                            <input type="text" [ngModel]="filterMotherName()"
+                                (ngModelChange)="filterMotherName.set($event)" placeholder="Filter by mother's name..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Date of Birth Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth:</label>
+                            <input type="text" [ngModel]="filterDob()" (ngModelChange)="filterDob.set($event)"
+                                placeholder="Filter by DOB..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Date of Joining Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date of Joining:</label>
+                            <input type="text" [ngModel]="filterDateOfJoining()"
+                                (ngModelChange)="filterDateOfJoining.set($event)"
+                                placeholder="Filter by joining date..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
+
+                    <!-- Clear Filters Button -->
+                    <div class="mt-4">
+                        <button (click)="clearAllFilters()"
+                            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            Clear All Filters
+                        </button>
+                    </div>
+                </div>
+                <!-- Table -->
+                <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -309,17 +306,17 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <select [(ngModel)]="employee.department" (change)="onFieldChange()"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="DEPT01">DEPT01</option>
-                                        <option value="DEPT02">DEPT02</option>
-                                        <option value="DEPT03">DEPT03</option>
+                                        <option *ngFor="let dept of departments()" [value]="dept.departmentId">
+                                            {{ dept.departmentName }}
+                                        </option>
                                     </select>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <select [(ngModel)]="employee.designation" (change)="onFieldChange()"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="DSG01">DSG01</option>
-                                        <option value="DSG02">DSG02</option>
-                                        <option value="DSG03">DSG03</option>
+                                        <option *ngFor="let desig of designations()" [value]="desig.designationId">
+                                            {{ desig.designationName }}
+                                        </option>
                                     </select>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">

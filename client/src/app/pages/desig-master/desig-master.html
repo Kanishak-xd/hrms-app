@@ -1,0 +1,338 @@
+<div class="min-h-screen bg-gray-50 p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Designation Master</h1>
+                    <p class="text-gray-600">Manage all job designations and positions</p>
+                </div>
+                <button (click)="openAddModal()"
+                    class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <i class="fas fa-plus mr-2"></i>Add Designation
+                </button>
+            </div>
+        </div>
+
+        <!-- Access Control -->
+        <div *ngIf="!isHR()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <strong class="font-bold">Access Denied!</strong>
+            <span class="block sm:inline"> Only HR personnel can access this page.</span>
+        </div>
+
+        <!-- Main Content (only show if HR) -->
+        <div *ngIf="isHR()">
+            <!-- Loading State -->
+            <div *ngIf="loading()" class="bg-white shadow rounded-lg p-6 mb-6">
+                <div class="flex items-center justify-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span class="ml-2 text-gray-600">Loading designations...</span>
+                </div>
+            </div>
+
+            <!-- Error State -->
+            <div *ngIf="error()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                {{ error() }}
+            </div>
+
+            <!-- Designation Table -->
+            <div *ngIf="!loading() && !error()" class="bg-white shadow rounded-lg overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-semibold text-gray-900">Designation List</h2>
+                        <div class="flex space-x-3">
+                            <!-- Department Filter -->
+                            <select [ngModel]="departmentFilter()" (ngModelChange)="departmentFilter.set($event)"
+                                class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Departments</option>
+                                <option *ngFor="let dept of activeDepartments()" [value]="dept.departmentId">
+                                    {{ dept.departmentName }}
+                                </option>
+                            </select>
+                            <!-- Status Filter -->
+                            <select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)"
+                                class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                            <!-- Search -->
+                            <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"
+                                placeholder="Search designations..."
+                                class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Designation ID
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Designation Name
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Department
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Level/Grade
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Description
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Created On
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Updated On
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr *ngFor="let desig of filteredDesignations(); let i = index">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ desig.designationId }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="text" [(ngModel)]="desig.designationName" [readonly]="!desig.isEditing"
+                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        [class.bg-gray-100]="!desig.isEditing">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <select [(ngModel)]="desig.departmentId" [disabled]="!desig.isEditing"
+                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        [class.bg-gray-100]="!desig.isEditing">
+                                        <option *ngFor="let dept of activeDepartments()" [value]="dept.departmentId">
+                                            {{ dept.departmentName }}
+                                        </option>
+                                    </select>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="text" [(ngModel)]="desig.level" [readonly]="!desig.isEditing"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        [class.bg-gray-100]="!desig.isEditing">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="text" [(ngModel)]="desig.description" [readonly]="!desig.isEditing"
+                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        [class.bg-gray-100]="!desig.isEditing">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                        [class.bg-green-100]="desig.status === 'active'"
+                                        [class.text-green-800]="desig.status === 'active'"
+                                        [class.bg-red-100]="desig.status === 'inactive'"
+                                        [class.text-red-800]="desig.status === 'inactive'">
+                                        {{ desig.status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ desig.createdOn | date:'short' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ desig.updatedOn | date:'short' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <!-- View Button -->
+                                        <button (click)="viewDesignation(desig)"
+                                            class="text-blue-600 hover:text-blue-900">
+                                            View
+                                        </button>
+
+                                        <!-- Edit/Update/Cancel Buttons -->
+                                        <div *ngIf="!desig.isEditing">
+                                            <button (click)="startEdit(desig)"
+                                                class="text-indigo-600 hover:text-indigo-900">
+                                                Edit
+                                            </button>
+                                        </div>
+                                        <div *ngIf="desig.isEditing" class="flex space-x-1">
+                                            <button (click)="updateDesignation(desig)"
+                                                class="text-green-600 hover:text-green-900">
+                                                Update
+                                            </button>
+                                            <button (click)="cancelEdit(desig)" class="text-red-600 hover:text-red-900">
+                                                Cancel
+                                            </button>
+                                        </div>
+
+                                        <!-- Toggle Status Button -->
+                                        <button (click)="toggleStatus(desig)"
+                                            class="text-yellow-600 hover:text-yellow-900">
+                                            {{ desig.status === 'active' ? 'Deactivate' : 'Activate' }}
+                                        </button>
+
+                                        <!-- Delete Button -->
+                                        <button (click)="deleteDesignation(desig)"
+                                            class="text-red-600 hover:text-red-900">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div *ngIf="filteredDesignations().length === 0" class="text-center py-12">
+                    <p class="text-gray-500">No designations found.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div *ngIf="showModal()" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">
+                {{ editingDesignation() ? 'Edit Designation' : 'Add New Designation' }}
+            </h3>
+
+            <form (ngSubmit)="saveDesignation()" #desigForm="ngForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Designation ID</label>
+                    <input type="text" [(ngModel)]="designationForm.designationId" name="designationId" required
+                        [readonly]="editingDesignation()"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Designation Name</label>
+                    <input type="text" [(ngModel)]="designationForm.designationName" name="designationName" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                    <select [(ngModel)]="designationForm.departmentId" name="departmentId" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Department</option>
+                        <option *ngFor="let dept of activeDepartments()" [value]="dept.departmentId">
+                            {{ dept.departmentName }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Level/Grade</label>
+                    <input type="text" [(ngModel)]="designationForm.level" name="level"
+                        placeholder="e.g., L1, L2, Manager"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea [(ngModel)]="designationForm.description" name="description" rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select [(ngModel)]="designationForm.status" name="status" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" (click)="closeModal()"
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Cancel
+                    </button>
+                    <button type="submit" [disabled]="!desigForm.valid || saving()"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
+                        {{ saving() ? 'Saving...' : 'Save' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Modal -->
+<div *ngIf="showViewModal()" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Designation Details</h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Designation ID</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ selectedDesignation()?.designationId }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Designation Name</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ selectedDesignation()?.designationName }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Department</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ getDepartmentName(selectedDesignation()?.departmentId) }}
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Level/Grade</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ selectedDesignation()?.level || 'N/A' }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Description</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ selectedDesignation()?.description || 'No description' }}
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                    <span
+                        [class]="selectedDesignation()?.status === 'active' ? 'px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800'">
+                        {{ selectedDesignation()?.status }}
+                    </span>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Created On</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ selectedDesignation()?.createdOn | date:'medium' }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Updated On</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ selectedDesignation()?.updatedOn | date:'medium' }}</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button (click)="closeViewModal()"
+                    class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

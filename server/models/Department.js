@@ -1,10 +1,18 @@
 const mongoose = require('mongoose');
 
 const departmentSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  departmentId: { type: String, required: true, unique: true },
+  departmentName: { type: String, required: true },
   description: { type: String },
-  status: { type: String, enum: ['active', 'inactive'], required: true },
-  createdAt: { type: Date, default: Date.now, required: true }
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  createdOn: { type: Date, default: Date.now },
+  updatedOn: { type: Date, default: Date.now }
+});
+
+// Update the updatedOn field before saving
+departmentSchema.pre('save', function(next) {
+  this.updatedOn = new Date();
+  next();
 });
 
 module.exports = mongoose.model('Department', departmentSchema); 

@@ -1,0 +1,29 @@
+/* Department Master Styles */
+.modal-overlay {
+    backdrop-filter: blur(4px);
+}
+
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.input-field {
+    min-width: 200px;
+}
+
+.status-badge {
+    transition: all 0.2s ease-in-out;
+}
+
+.status-badge:hover {
+    transform: scale(1.05);
+}
+
+.action-button {
+    transition: all 0.2s ease-in-out;
+}
+
+.action-button:hover {
+    transform: scale(1.1);
+}
