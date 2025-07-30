@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const { verifyToken, checkRole } = require("./middleware/auth");
 
-dotenv.config();
+dotenv.config({ path: './.env' });
 connectDB();
 
 const app = express();

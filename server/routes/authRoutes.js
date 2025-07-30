@@ -103,6 +103,39 @@ router.get('/designations', async (req, res) => {
   }
 });
 
+// GET /employees - Get all employees for Employee Master
+router.get("/employees", verifyToken, checkRole("hr"), async (req, res) => {
+  try {
+    const employees = await User.find({}).select("-password");
+    res.json(employees);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// PUT /employee/:id - Update employee data
+router.put("/employee/:id", verifyToken, checkRole("hr"), async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  try {
+    const updatedEmployee = await User.findByIdAndUpdate(
+      id, 
+      updateData, 
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    res.json(updatedEmployee);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // PATCH /user/:id/status
 router.patch("/user/:id/status", verifyToken, checkRole("hr"), async (req, res) => {
   const { id } = req.params;

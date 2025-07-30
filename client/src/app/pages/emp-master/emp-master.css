@@ -1,0 +1,27 @@
+/* Employee Master specific styles */
+.employee-table input:focus,
+.employee-table select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.employee-table input:hover,
+.employee-table select:hover {
+    border-color: #6b7280;
+}
+
+.input-field {
+    min-width: 200px;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+    .employee-table {
+        font-size: 0.875rem;
+    }
+
+    .employee-table th,
+    .employee-table td {
+        padding: 0.5rem;
+    }
+}

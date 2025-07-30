@@ -78,4 +78,12 @@ export class AuthService {
   getDesignations(): Observable<any[]> {
     return this.http.get<any[]>('/api/designations');
   }
+
+  getAllEmployees(): Observable<any[]> {
+    return this.http.get<any[]>('/api/employees');
+  }
+
+  updateEmployee(employeeId: string, employeeData: any): Observable<any> {
+    return this.http.put(`/api/employee/${employeeId}`, employeeData);
+  }
 }
