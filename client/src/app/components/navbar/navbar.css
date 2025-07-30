@@ -1,0 +1,23 @@
+/* Navbar Styles */
+nav {
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Smooth transitions */
+.transition-colors {
+    transition: color 0.2s ease-in-out;
+}
+
+/* Hover effects */
+.hover\:text-blue-800:hover {
+    color: #1e40af;
+}
+
+.hover\:text-gray-900:hover {
+    color: #111827;
+}
+
+.hover\:bg-gray-100:hover {
+    background-color: #f3f4f6;
+}

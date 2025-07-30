@@ -1,0 +1,15 @@
+/* App Layout Styles */
+.min-h-screen {
+    min-height: 100vh;
+}
+
+/* Ensure proper spacing for fixed navbar */
+main {
+    padding-top: 4rem;
+    /* 64px to account for fixed navbar */
+}
+
+/* Background styling */
+.bg-gray-50 {
+    background-color: #f9fafb;
+}
