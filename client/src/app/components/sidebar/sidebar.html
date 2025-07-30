@@ -28,6 +28,7 @@
             <div>
                 <h3 class="text-lg font-medium text-gray-900">{{ getUserName() }}</h3>
                 <p class="text-sm text-gray-500">{{ getUserEmail() }}</p>
+                <p class="text-xs text-gray-400 capitalize">{{ getUserRole() || 'No Role' }}</p>
             </div>
         </div>
     </div>
@@ -36,7 +37,7 @@
     <div class="flex-1 overflow-y-auto">
         <nav class="px-6 py-4">
             <div class="space-y-2">
-                <!-- Dashboard -->
+                <!-- Dashboard - All users can access -->
                 <button (click)="navigateTo('/dashboard')"
                     class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,8 +49,18 @@
                     Dashboard
                 </button>
 
-                <!-- Employee Master -->
-                <button (click)="navigateTo('/emp-master')"
+                <!-- HR Panel - HR and Admin only -->
+                <button *ngIf="canAccessHrPanel()" (click)="navigateTo('/hr-panel')"
+                    class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    HR Panel
+                </button>
+
+                <!-- Employee Master - HR and Admin only -->
+                <button *ngIf="canAccessEmployeeMaster()" (click)="navigateTo('/emp-master')"
                     class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -59,8 +70,8 @@
                     Employee Master
                 </button>
 
-                <!-- Department Master -->
-                <button (click)="navigateTo('/dept-master')"
+                <!-- Department Master - HR and Admin only -->
+                <button *ngIf="canAccessDepartmentMaster()" (click)="navigateTo('/dept-master')"
                     class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -70,8 +81,8 @@
                     Department Master
                 </button>
 
-                <!-- Designation Master -->
-                <button (click)="navigateTo('/desig-master')"
+                <!-- Designation Master - HR and Admin only -->
+                <button *ngIf="canAccessDesignationMaster()" (click)="navigateTo('/desig-master')"
                     class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -81,8 +92,8 @@
                     Designation Master
                 </button>
 
-                <!-- Company Master -->
-                <button (click)="navigateTo('/company-master')"
+                <!-- Company Master - Admin only -->
+                <button *ngIf="canAccessCompanyMaster()" (click)="navigateTo('/company-master')"
                     class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

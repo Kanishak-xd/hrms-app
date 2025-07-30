@@ -63,7 +63,6 @@ export class CompanyMasterComponent implements OnInit {
     loading = signal(false);
     error = signal<string | null>(null);
     saving = signal(false);
-    userRole = signal<string | null>(null);
 
     // Modal states
     showModal = signal(false);
@@ -130,30 +129,7 @@ export class CompanyMasterComponent implements OnInit {
     constructor(private authService: AuthService) { }
 
     ngOnInit(): void {
-        this.checkUserRole();
         this.loadCompanies();
-    }
-
-    checkUserRole(): void {
-        const role = this.authService.getUserRole();
-        console.log('Current user role from token:', role);
-        console.log('Token:', this.authService.getToken());
-
-        if (role) {
-            this.userRole.set(role);
-        } else {
-            // Fallback to API call if token decoding fails
-            this.authService.getUserRoleFromAPI().subscribe({
-                next: (apiRole: string | null) => {
-                    console.log('User role from API:', apiRole);
-                    this.userRole.set(apiRole);
-                },
-                error: (err: any) => {
-                    console.error('Error getting user role from API:', err);
-                    this.userRole.set(null);
-                }
-            });
-        }
     }
 
     loadCompanies(): void {
@@ -399,11 +375,5 @@ export class CompanyMasterComponent implements OnInit {
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
-    }
-
-    isAdmin(): boolean {
-        const role = this.userRole();
-        console.log('Checking Admin access, role:', role);
-        return role === 'admin';
     }
 } 

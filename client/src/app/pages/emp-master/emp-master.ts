@@ -16,7 +16,6 @@ export class EmpMasterComponent implements OnInit {
     loading = signal(false);
     error = signal<string | null>(null);
     hasChanges = signal(false);
-    userRole = signal<string | null>(null);
 
     // Filter properties
     filterName = signal<string>('');
@@ -134,7 +133,6 @@ export class EmpMasterComponent implements OnInit {
     constructor(private authService: AuthService) { }
 
     ngOnInit(): void {
-        this.checkUserRole();
         this.loadEmployees();
         this.loadDepartments();
         this.loadDesignations();
@@ -160,10 +158,6 @@ export class EmpMasterComponent implements OnInit {
                 console.error('Failed to load designations:', err);
             }
         });
-    }
-
-    checkUserRole(): void {
-        this.userRole.set(this.authService.getUserRole());
     }
 
     loadEmployees(): void {
@@ -229,10 +223,6 @@ export class EmpMasterComponent implements OnInit {
     cancelChanges(): void {
         this.employees.set(JSON.parse(JSON.stringify(this.originalEmployees())));
         this.hasChanges.set(false);
-    }
-
-    isHR(): boolean {
-        return this.userRole() === 'hr';
     }
 
     clearAllFilters(): void {

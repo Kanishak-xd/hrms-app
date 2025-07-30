@@ -37,7 +37,6 @@ export class DeptMasterComponent implements OnInit {
     loading = signal(false);
     error = signal<string | null>(null);
     saving = signal(false);
-    userRole = signal<string | null>(null);
 
     // Modal states
     showModal = signal(false);
@@ -81,30 +80,7 @@ export class DeptMasterComponent implements OnInit {
     constructor(private authService: AuthService) { }
 
     ngOnInit(): void {
-        this.checkUserRole();
         this.loadDepartments();
-    }
-
-    checkUserRole(): void {
-        const role = this.authService.getUserRole();
-        console.log('Current user role from token:', role);
-        console.log('Token:', this.authService.getToken());
-
-        if (role) {
-            this.userRole.set(role);
-        } else {
-            // Fallback to API call if token decoding fails
-            this.authService.getUserRoleFromAPI().subscribe({
-                next: (apiRole: string | null) => {
-                    console.log('User role from API:', apiRole);
-                    this.userRole.set(apiRole);
-                },
-                error: (err: any) => {
-                    console.error('Error getting user role from API:', err);
-                    this.userRole.set(null);
-                }
-            });
-        }
     }
 
     loadDepartments(): void {
@@ -289,12 +265,5 @@ export class DeptMasterComponent implements OnInit {
             return isNaN(num) ? 0 : num;
         }), 0);
         return `DEPT${String(maxId + 1).padStart(3, '0')}`;
-    }
-
-    isHR(): boolean {
-        const role = this.userRole();
-        console.log('Checking HR access, role:', role);
-        // Temporarily allow access for testing - remove this in production
-        return role === 'hr' || role === 'admin' || true; // Remove the "|| true" in production
     }
 } 

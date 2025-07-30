@@ -1,365 +1,380 @@
-<div class="bg-gray-50 p-8">
+<div class="min-h-screen bg-gray-50 p-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <div class="bg-white shadow rounded-lg p-6 mb-6">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Employee Master</h1>
-            <p class="text-gray-600">Manage all employee information</p>
-        </div>
-
-        <!-- Access Control (will be replaced with auth guard later) -->
-        <div *ngIf="!isHR()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <strong class="font-bold">Access Denied!</strong>
-            <span class="block sm:inline"> Only HR personnel can access this page.</span>
-        </div>
-
-        <!-- Main Content (only show if HR) -->
-        <div *ngIf="isHR()">
-            <!-- Loading State -->
-            <div *ngIf="loading()" class="bg-white shadow rounded-lg p-6 mb-6">
-                <div class="flex items-center justify-center">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    <span class="ml-2 text-gray-600">Loading employees...</span>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Employee Master</h1>
+                    <p class="text-gray-600">Manage all employees in the system</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button *ngIf="hasChanges()" (click)="saveChanges()" [disabled]="loading()"
+                        class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50">
+                        <i class="fas fa-save mr-2"></i>{{ loading() ? 'Saving...' : 'Save Changes' }}
+                    </button>
+                    <button *ngIf="hasChanges()" (click)="cancelChanges()"
+                        class="px-6 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                        <i class="fas fa-times mr-2"></i>Cancel Changes
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <!-- Error State -->
-            <div *ngIf="error()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-                {{ error() }}
+        <!-- Loading State -->
+        <div *ngIf="loading()" class="bg-white shadow rounded-lg p-6 mb-6">
+            <div class="flex items-center justify-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span class="ml-2 text-gray-600">Loading employees...</span>
             </div>
+        </div>
 
-            <!-- Employee Table -->
-            <div *ngIf="!loading() && !error()" class="bg-white shadow rounded-lg overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-xl font-semibold text-gray-900">Employee List</h2>
-                        <div class="flex space-x-3">
-                            <button *ngIf="hasChanges()" (click)="cancelChanges()"
-                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Cancel
-                            </button>
-                            <button *ngIf="hasChanges()" (click)="saveChanges()" [disabled]="loading()"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
-                                {{ loading() ? 'Saving...' : 'Save Changes' }}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+        <!-- Error State -->
+        <div *ngIf="error()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            {{ error() }}
+        </div>
 
-                <!-- Filter section -->
-                <div class="p-6 border-b border-gray-200">
-                    <!-- Global Search -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Global Search:</label>
+        <!-- Employee Table -->
+        <div *ngIf="!loading() && !error()" class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-gray-900">Employee List</h2>
+                    <div class="flex space-x-3">
+                        <!-- Global Search -->
                         <input type="text" [ngModel]="globalSearch()" (ngModelChange)="globalSearch.set($event)"
-                            placeholder="Search across all fields..."
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <!-- Filters Grid -->
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                            placeholder="Global search..."
+                            class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <!-- Name Sort -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Name Sort:</label>
-                            <select [ngModel]="nameSort()" (ngModelChange)="nameSort.set($event)"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">No Sort</option>
-                                <option value="asc">A to Z</option>
-                                <option value="desc">Z to A</option>
-                            </select>
-                        </div>
-
-                        <!-- Email Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Email:</label>
-                            <input type="text" [ngModel]="filterEmail()" (ngModelChange)="filterEmail.set($event)"
-                                placeholder="Filter by email..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- Role Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Role:</label>
-                            <select [ngModel]="filterRole()" (ngModelChange)="filterRole.set($event)"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All</option>
-                                <option value="employee">Employee</option>
-                                <option value="hr">HR</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                        </div>
-
-                        <!-- Department Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Department:</label>
-                            <select [ngModel]="filterDepartment()" (ngModelChange)="filterDepartment.set($event)"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All</option>
-                                <option *ngFor="let dept of departments()" [value]="dept.departmentId">
-                                    {{ dept.departmentName }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <!-- Designation Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Designation:</label>
-                            <select [ngModel]="filterDesignation()" (ngModelChange)="filterDesignation.set($event)"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All</option>
-                                <option *ngFor="let desig of designations()" [value]="desig.designationId">
-                                    {{ desig.designationName }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <!-- Status Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Status:</label>
-                            <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All</option>
-                                <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
-                        </div>
-
-                        <!-- Grade Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Grade:</label>
-                            <input type="text" [ngModel]="filterGrade()" (ngModelChange)="filterGrade.set($event)"
-                                placeholder="Filter by grade..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- PF Number Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">PF Number:</label>
-                            <input type="text" [ngModel]="filterPfNumber()" (ngModelChange)="filterPfNumber.set($event)"
-                                placeholder="Filter by PF number..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- ESI Number Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">ESI Number:</label>
-                            <input type="text" [ngModel]="filterEsiNumber()"
-                                (ngModelChange)="filterEsiNumber.set($event)" placeholder="Filter by ESI number..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- Bank Account Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Bank Account:</label>
-                            <input type="text" [ngModel]="filterBankAccount()"
-                                (ngModelChange)="filterBankAccount.set($event)" placeholder="Filter by bank account..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- Bank Name Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Bank Name:</label>
-                            <input type="text" [ngModel]="filterBankName()" (ngModelChange)="filterBankName.set($event)"
-                                placeholder="Filter by bank name..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- IFSC Code Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">IFSC Code:</label>
-                            <input type="text" [ngModel]="filterIfscCode()" (ngModelChange)="filterIfscCode.set($event)"
-                                placeholder="Filter by IFSC code..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- Father's Name Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Father's Name:</label>
-                            <input type="text" [ngModel]="filterFatherName()"
-                                (ngModelChange)="filterFatherName.set($event)" placeholder="Filter by father's name..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- Mother's Name Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Mother's Name:</label>
-                            <input type="text" [ngModel]="filterMotherName()"
-                                (ngModelChange)="filterMotherName.set($event)" placeholder="Filter by mother's name..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- Date of Birth Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth:</label>
-                            <input type="text" [ngModel]="filterDob()" (ngModelChange)="filterDob.set($event)"
-                                placeholder="Filter by DOB..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        <!-- Date of Joining Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Date of Joining:</label>
-                            <input type="text" [ngModel]="filterDateOfJoining()"
-                                (ngModelChange)="filterDateOfJoining.set($event)"
-                                placeholder="Filter by joining date..."
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    </div>
-
-                    <!-- Clear Filters Button -->
-                    <div class="mt-4">
+                        <select [ngModel]="nameSort()" (ngModelChange)="nameSort.set($event)"
+                            class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Sort by Name</option>
+                            <option value="asc">A-Z</option>
+                            <option value="desc">Z-A</option>
+                        </select>
+                        <!-- Clear Filters -->
                         <button (click)="clearAllFilters()"
-                            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                            Clear All Filters
+                            class="px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            Clear Filters
                         </button>
                     </div>
                 </div>
-                <!-- Table -->
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Email</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Role</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Father's Name</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Mother's Name</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Date of Birth</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Date of Joining</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Department</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Designation</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    PF Number</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ESI Number</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Bank Account</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Bank Name</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    IFSC Code</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Grade</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr *ngFor="let employee of filteredEmployees(); let i = index">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.fullName" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="email" [(ngModel)]="employee.email" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <select [(ngModel)]="employee.role" (change)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="employee">Employee</option>
-                                        <option value="hr">HR</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.fatherName" (input)="onFieldChange()"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.motherName" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.dob" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.dateOfJoining" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <select [(ngModel)]="employee.department" (change)="onFieldChange()"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option *ngFor="let dept of departments()" [value]="dept.departmentId">
-                                            {{ dept.departmentName }}
-                                        </option>
-                                    </select>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <select [(ngModel)]="employee.designation" (change)="onFieldChange()"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option *ngFor="let desig of designations()" [value]="desig.designationId">
-                                            {{ desig.designationName }}
-                                        </option>
-                                    </select>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.pfNumber" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.esiNumber" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.bankAccount" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.bankName" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.ifscCode" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="text" [(ngModel)]="employee.grade" (input)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <select [(ngModel)]="employee.status" (change)="onFieldChange()"
-                                        class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="pending">Pending</option>
-                                        <option value="approved">Approved</option>
-                                        <option value="rejected">Rejected</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            </div>
 
-                <!-- Empty State -->
-                <div *ngIf="filteredEmployees().length === 0" class="text-center py-12">
-                    <p class="text-gray-500">No employees found.</p>
+            <!-- Filters Row -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <!-- Email Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="text" [ngModel]="filterEmail()" (ngModelChange)="filterEmail.set($event)"
+                            placeholder="Filter by email"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Role Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                        <select [ngModel]="filterRole()" (ngModelChange)="filterRole.set($event)"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <option value="">All Roles</option>
+                            <option value="admin">Admin</option>
+                            <option value="hr">HR</option>
+                            <option value="employee">Employee</option>
+                        </select>
+                    </div>
+
+                    <!-- Department Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                        <select [ngModel]="filterDepartment()" (ngModelChange)="filterDepartment.set($event)"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <option value="">All Departments</option>
+                            <option *ngFor="let dept of departments()" [value]="dept.departmentName">
+                                {{ dept.departmentName }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Designation Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+                        <select [ngModel]="filterDesignation()" (ngModelChange)="filterDesignation.set($event)"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <option value="">All Designations</option>
+                            <option *ngFor="let desig of designations()" [value]="desig.designationName">
+                                {{ desig.designationName }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+
+                    <!-- Grade Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Grade</label>
+                        <input type="text" [ngModel]="filterGrade()" (ngModelChange)="filterGrade.set($event)"
+                            placeholder="Filter by grade"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+
+                    <!-- PF Number Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">PF Number</label>
+                        <input type="text" [ngModel]="filterPfNumber()" (ngModelChange)="filterPfNumber.set($event)"
+                            placeholder="Filter by PF number"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+
+                    <!-- ESI Number Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">ESI Number</label>
+                        <input type="text" [ngModel]="filterEsiNumber()" (ngModelChange)="filterEsiNumber.set($event)"
+                            placeholder="Filter by ESI number"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Bank Account Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Bank Account</label>
+                        <input type="text" [ngModel]="filterBankAccount()"
+                            (ngModelChange)="filterBankAccount.set($event)" placeholder="Filter by bank account"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Bank Name Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Bank Name</label>
+                        <input type="text" [ngModel]="filterBankName()" (ngModelChange)="filterBankName.set($event)"
+                            placeholder="Filter by bank name"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+
+                    <!-- IFSC Code Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">IFSC Code</label>
+                        <input type="text" [ngModel]="filterIfscCode()" (ngModelChange)="filterIfscCode.set($event)"
+                            placeholder="Filter by IFSC code"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Father's Name Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Father's Name</label>
+                        <input type="text" [ngModel]="filterFatherName()" (ngModelChange)="filterFatherName.set($event)"
+                            placeholder="Filter by father's name"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Mother's Name Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mother's Name</label>
+                        <input type="text" [ngModel]="filterMotherName()" (ngModelChange)="filterMotherName.set($event)"
+                            placeholder="Filter by mother's name"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Date of Birth Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                        <input type="text" [ngModel]="filterDob()" (ngModelChange)="filterDob.set($event)"
+                            placeholder="Filter by DOB"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Date of Joining Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date of Joining</label>
+                        <input type="text" [ngModel]="filterDateOfJoining()"
+                            (ngModelChange)="filterDateOfJoining.set($event)" placeholder="Filter by joining date"
+                            class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
                 </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Name
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Role
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Father's Name
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Mother's Name
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Date of Birth
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Date of Joining
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Department
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Designation
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                PF Number
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ESI Number
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Bank Account
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Bank Name
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                IFSC Code
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Grade
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr *ngFor="let employee of filteredEmployees(); let i = index">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.fullName" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="email" [(ngModel)]="employee.email" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <select [(ngModel)]="employee.role" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                                    <option value="employee">Employee</option>
+                                    <option value="hr">HR</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.fatherName" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.motherName" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.dob" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.dateOfJoining"
+                                    (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <select [(ngModel)]="employee.department" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                                    <option *ngFor="let dept of departments()" [value]="dept.departmentName">
+                                        {{ dept.departmentName }}
+                                    </option>
+                                </select>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <select [(ngModel)]="employee.designation" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                                    <option *ngFor="let desig of designations()" [value]="desig.designationName">
+                                        {{ desig.designationName }}
+                                    </option>
+                                </select>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.pfNumber" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.esiNumber" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.bankAccount" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.bankName" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.ifscCode" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <input type="text" [(ngModel)]="employee.grade" (ngModelChange)="onFieldChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style="min-width: 200px;">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                    [class.bg-yellow-100]="employee.status === 'pending'"
+                                    [class.text-yellow-800]="employee.status === 'pending'"
+                                    [class.bg-green-100]="employee.status === 'approved'"
+                                    [class.text-green-800]="employee.status === 'approved'"
+                                    [class.bg-red-100]="employee.status === 'rejected'"
+                                    [class.text-red-800]="employee.status === 'rejected'">
+                                    {{ employee.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <button (click)="saveChanges()" [disabled]="!hasChanges() || loading()"
+                                        class="text-green-600 hover:text-green-900 disabled:opacity-50">
+                                        Save
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="filteredEmployees().length === 0" class="text-center py-12">
+                <p class="text-gray-500">No employees found.</p>
             </div>
         </div>
     </div>

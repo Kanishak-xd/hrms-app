@@ -13,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
 export class SidebarComponent implements OnInit, OnDestroy {
     isOpen = signal(false);
     userInfo = signal<any>(null);
+    userRole = signal<string | null>(null);
 
     constructor(
         private router: Router,
@@ -54,12 +55,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
                     name: payload.fullName || 'User',
                     email: payload.email || 'user@example.com'
                 });
+                this.userRole.set(payload.role || null);
             } catch (e) {
                 console.error('Error decoding token:', e);
                 this.userInfo.set({
                     name: 'User',
                     email: 'user@example.com'
                 });
+                this.userRole.set(null);
             }
         }
     }
@@ -75,6 +78,36 @@ export class SidebarComponent implements OnInit, OnDestroy {
     getUserInitials(): string {
         const name = this.getUserName();
         return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+
+    getUserRole(): string | null {
+        return this.userRole();
+    }
+
+    // Role-based navigation methods
+    canAccessEmployeeMaster(): boolean {
+        const role = this.getUserRole();
+        return role === 'hr' || role === 'admin';
+    }
+
+    canAccessDepartmentMaster(): boolean {
+        const role = this.getUserRole();
+        return role === 'hr' || role === 'admin';
+    }
+
+    canAccessDesignationMaster(): boolean {
+        const role = this.getUserRole();
+        return role === 'hr' || role === 'admin';
+    }
+
+    canAccessCompanyMaster(): boolean {
+        const role = this.getUserRole();
+        return role === 'admin';
+    }
+
+    canAccessHrPanel(): boolean {
+        const role = this.getUserRole();
+        return role === 'hr' || role === 'admin';
     }
 
     navigateTo(route: string): void {
