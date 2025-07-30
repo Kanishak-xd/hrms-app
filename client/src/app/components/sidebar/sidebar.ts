@@ -197,6 +197,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
         return role === 'hr'; // Only HR users can access HR panel
     }
 
+    hasRole(): boolean {
+        const role = this.getUserRole();
+        return role !== null && role !== undefined && role !== '';
+    }
+
     navigateTo(route: string): void {
         this.router.navigate([route]);
         this.closeSidebar();

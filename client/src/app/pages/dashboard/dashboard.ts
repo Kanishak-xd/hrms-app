@@ -25,7 +25,6 @@ export class Dashboard implements OnInit {
   loading = signal<boolean>(true);
 
   ngOnInit(): void {
-    this.loadDashboardData();
     this.loadCurrentUser();
   }
 
@@ -34,10 +33,13 @@ export class Dashboard implements OnInit {
       next: user => {
         this.user.set(user);
         this.userRole.set(user?.role || null);
+        // Load dashboard data after user role is available
+        this.loadDashboardData();
       },
       error: err => {
         this.user.set(null);
         this.userRole.set(null);
+        this.loading.set(false);
       }
     });
   }
@@ -56,9 +58,6 @@ export class Dashboard implements OnInit {
         this.authService.getAllEmployees().subscribe({
           next: (employees) => {
             this.totalEmployees.set(employees.length);
-            // Count pending approvals
-            const pending = employees.filter(emp => emp.status === 'pending').length;
-            this.pendingApprovals.set(pending);
           },
           error: (err2) => {
             console.error('Error loading employees:', err2);
@@ -67,16 +66,36 @@ export class Dashboard implements OnInit {
       }
     });
 
-    // Load departments count
-    this.authService.getDepartments().subscribe({
-      next: (departments) => {
-        const active = departments.filter(dept => dept.status === 'active').length;
-        this.activeDepartments.set(active);
-      },
-      error: (err) => {
-        console.error('Error loading departments:', err);
-      }
-    });
+    // For HR users, load all employees and count pending approvals
+    if (this.userRole() === 'hr') {
+      this.authService.getAllEmployees().subscribe({
+        next: (employees) => {
+          const pending = employees.filter(emp => emp.status === 'pending').length;
+          this.pendingApprovals.set(pending);
+        },
+        error: (err) => {
+          console.error('Error loading employees for pending approvals:', err);
+          this.pendingApprovals.set(0);
+        }
+      });
+    } else {
+      this.pendingApprovals.set(0);
+    }
+
+    // Load departments count (not for employee users)
+    if (this.userRole() !== 'employee') {
+      this.authService.getDepartments().subscribe({
+        next: (departments) => {
+          const active = departments.filter(dept => dept.status === 'active').length;
+          this.activeDepartments.set(active);
+        },
+        error: (err) => {
+          console.error('Error loading departments:', err);
+        }
+      });
+    } else {
+      this.activeDepartments.set(0);
+    }
 
     // Load designations count
     this.authService.getDesignations().subscribe({
@@ -137,5 +156,10 @@ export class Dashboard implements OnInit {
   canAccessHrPanel(): boolean {
     const role = this.userRole();
     return role === 'hr'; // Only HR users can access HR panel
+  }
+
+  hasRole(): boolean {
+    const role = this.userRole();
+    return role !== null && role !== undefined && role !== '';
   }
 }

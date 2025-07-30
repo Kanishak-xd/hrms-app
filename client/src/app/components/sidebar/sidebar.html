@@ -102,6 +102,16 @@
                     </svg>
                     Company Master
                 </button>
+
+                <!-- Profile Page Link -->
+                <button *ngIf="hasRole()" (click)="navigateTo('/profile')"
+                    class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5.121 17.804A13.937 13.937 0 0112 15c3.183 0 6.22.62 9 1.745M15 21v-2a4 4 0 00-8 0v2m8 0a4 4 0 01-8 0m8 0H7m8 0h2m-2 0h-5" />
+                    </svg>
+                    My Profile
+                </button>
             </div>
         </nav>
     </div>

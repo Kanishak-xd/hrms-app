@@ -1,0 +1,73 @@
+<div class="max-w-2xl mx-auto bg-white shadow rounded-lg p-8 mt-8">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">My Profile</h2>
+    <div *ngIf="loading()" class="text-center text-gray-500">Loading profile...</div>
+    <div *ngIf="!loading() && user()" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs text-gray-500">Full Name</label>
+                <div class="font-medium text-gray-900">{{ user().fullName }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Email</label>
+                <div class="font-medium text-gray-900">{{ user().email }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Role</label>
+                <div class="font-medium text-gray-900 capitalize">{{ user().role }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Father's Name</label>
+                <div class="font-medium text-gray-900">{{ user().fatherName }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Mother's Name</label>
+                <div class="font-medium text-gray-900">{{ user().motherName }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Date of Birth</label>
+                <div class="font-medium text-gray-900">{{ user().dob | date:'mediumDate' }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Date of Joining</label>
+                <div class="font-medium text-gray-900">{{ user().dateOfJoining | date:'mediumDate' }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Department</label>
+                <div class="font-medium text-gray-900">{{ user().department }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Designation</label>
+                <div class="font-medium text-gray-900">{{ user().designation }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">PF Number</label>
+                <div class="font-medium text-gray-900">{{ user().pfNumber }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">ESI Number</label>
+                <div class="font-medium text-gray-900">{{ user().esiNumber }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Bank Account</label>
+                <div class="font-medium text-gray-900">{{ user().bankAccount }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Bank Name</label>
+                <div class="font-medium text-gray-900">{{ user().bankName }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">IFSC Code</label>
+                <div class="font-medium text-gray-900">{{ user().ifscCode }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Grade</label>
+                <div class="font-medium text-gray-900">{{ user().grade }}</div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Status</label>
+                <div class="font-medium text-gray-900 capitalize">{{ user().status }}</div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="!loading() && !user()" class="text-center text-red-500">Failed to load profile.</div>
+</div>

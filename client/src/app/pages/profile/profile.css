@@ -1,0 +1,39 @@
+.max-w-2xl {
+    max-width: 42rem;
+}
+
+.bg-white {
+    background: #fff;
+}
+
+.shadow {
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.05);
+}
+
+.rounded-lg {
+    border-radius: 0.75rem;
+}
+
+.p-8 {
+    padding: 2rem;
+}
+
+.mt-8 {
+    margin-top: 2rem;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.text-gray-900 {
+    color: #1a202c;
+}
+
+.text-gray-500 {
+    color: #6b7280;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}

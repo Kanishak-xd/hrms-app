@@ -18,6 +18,7 @@ export const routes: Routes = [
 
     // Protected routes with role-based access
     { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
+    { path: 'profile', loadComponent: () => import('./pages/profile/profile').then(m => m.Profile) },
 
     // HR routes - accessible by HR and Admin
     { path: 'hr-panel', component: HrPanelComponent, canActivate: [roleGuard(['hr', 'admin'])] },
