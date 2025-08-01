@@ -11,9 +11,6 @@ const userSchema = new mongoose.Schema({
   pfNumber: String, esiNumber: String,
   bankAccount: String, bankName: String, ifscCode: String, grade: String,
 
-  // approval status
-  status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
-
   createdAt: { type: Date, default: Date.now }
 });
 

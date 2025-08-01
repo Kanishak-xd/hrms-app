@@ -20,7 +20,6 @@ export class Dashboard implements OnInit {
   totalEmployees = signal<number>(0);
   activeDepartments = signal<number>(0);
   totalDesignations = signal<number>(0);
-  pendingApprovals = signal<number>(0);
   totalCompanies = signal<number>(0);
   loading = signal<boolean>(true);
 
@@ -65,22 +64,6 @@ export class Dashboard implements OnInit {
         });
       }
     });
-
-    // For HR users, load all employees and count pending approvals
-    if (this.userRole() === 'hr') {
-      this.authService.getAllEmployees().subscribe({
-        next: (employees) => {
-          const pending = employees.filter(emp => emp.status === 'pending').length;
-          this.pendingApprovals.set(pending);
-        },
-        error: (err) => {
-          console.error('Error loading employees for pending approvals:', err);
-          this.pendingApprovals.set(0);
-        }
-      });
-    } else {
-      this.pendingApprovals.set(0);
-    }
 
     // Load departments count (not for employee users)
     if (this.userRole() !== 'employee') {
@@ -135,7 +118,7 @@ export class Dashboard implements OnInit {
   // Role-based access control methods
   canAccessEmployeeMaster(): boolean {
     const role = this.userRole();
-    return role === 'hr'; // Only HR users can access employee master
+    return role === 'hr' || role === 'admin'; // HR and Admin users can access employee master
   }
 
   canAccessDepartmentMaster(): boolean {
@@ -151,11 +134,6 @@ export class Dashboard implements OnInit {
   canAccessCompanyMaster(): boolean {
     const role = this.userRole();
     return role === 'admin';
-  }
-
-  canAccessHrPanel(): boolean {
-    const role = this.userRole();
-    return role === 'hr'; // Only HR users can access HR panel
   }
 
   hasRole(): boolean {

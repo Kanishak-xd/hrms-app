@@ -51,7 +51,7 @@
             </div>
 
             <!-- Total Designations - HR and Admin only -->
-            <div *ngIf="canAccessHrPanel()" class="bg-white shadow rounded-lg p-6">
+            <div *ngIf="canAccessDesignationMaster()" class="bg-white shadow rounded-lg p-6">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,22 +63,6 @@
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Total Designations</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ totalDesignations() }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pending Approvals - Only for HR users -->
-            <div *ngIf="userRole() === 'hr'" class="bg-white shadow rounded-lg p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Pending Approvals</p>
-                        <p class="text-2xl font-semibold text-gray-900">{{ pendingApprovals() }}</p>
                     </div>
                 </div>
             </div>
@@ -105,19 +89,6 @@
         <div *ngIf="!loading()" class="bg-white shadow rounded-lg p-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- HR Panel - HR and Admin only -->
-                <button *ngIf="canAccessHrPanel()" (click)="navigateTo('/hr-panel')"
-                    class="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                    <div class="text-center">
-                        <svg class="w-8 h-8 mx-auto text-blue-600 mb-2" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <p class="text-sm font-medium text-gray-900">HR Panel</p>
-                    </div>
-                </button>
-
                 <!-- Employee Master - HR and Admin only -->
                 <button *ngIf="canAccessEmployeeMaster()" (click)="navigateTo('/emp-master')"
                     class="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200">

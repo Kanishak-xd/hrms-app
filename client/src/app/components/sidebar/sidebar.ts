@@ -174,7 +174,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     // Role-based navigation methods
     canAccessEmployeeMaster(): boolean {
         const role = this.getUserRole();
-        return role === 'hr'; // Only HR users can access employee master
+        return role === 'hr' || role === 'admin'; // HR and Admin users can access employee master
     }
 
     canAccessDepartmentMaster(): boolean {
@@ -190,11 +190,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     canAccessCompanyMaster(): boolean {
         const role = this.getUserRole();
         return role === 'admin';
-    }
-
-    canAccessHrPanel(): boolean {
-        const role = this.getUserRole();
-        return role === 'hr'; // Only HR users can access HR panel
     }
 
     hasRole(): boolean {

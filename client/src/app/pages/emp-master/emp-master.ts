@@ -1,12 +1,13 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-emp-master',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule],
     templateUrl: './emp-master.html',
     styleUrls: ['./emp-master.css']
 })
@@ -17,6 +18,12 @@ export class EmpMasterComponent implements OnInit {
     error = signal<string | null>(null);
     hasChanges = signal(false);
 
+    // Modal properties
+    showAddEmployeeModal = signal(false);
+    addEmployeeLoading = signal(false);
+    addEmployeeError = signal<string | null>(null);
+    addEmployeeSuccess = signal<string | null>(null);
+
     // Filter properties
     filterName = signal<string>('');
     filterEmail = signal<string>('');
@@ -25,7 +32,6 @@ export class EmpMasterComponent implements OnInit {
     nameSort = signal<string>('');
     filterRole = signal<string>('');
     filterDesignation = signal<string>('');
-    filterStatus = signal<string>('');
     filterGrade = signal<string>('');
     filterPfNumber = signal<string>('');
     filterEsiNumber = signal<string>('');
@@ -40,6 +46,30 @@ export class EmpMasterComponent implements OnInit {
     // Department and Designation data
     departments = signal<any[]>([]);
     designations = signal<any[]>([]);
+
+    // Add employee form
+    addEmployeeForm: any;
+
+    constructor(public authService: AuthService, private fb: FormBuilder) {
+        this.addEmployeeForm = this.fb.group({
+            fullName: ['', Validators.required],
+            email: ['', [Validators.required, Validators.email]],
+            password: ['', [Validators.required, Validators.minLength(6)]],
+            role: ['employee', Validators.required],
+            fatherName: [''],
+            motherName: [''],
+            dob: [''],
+            dateOfJoining: [''],
+            department: [''],
+            designation: [''],
+            pfNumber: [''],
+            esiNumber: [''],
+            bankAccount: [''],
+            bankName: [''],
+            ifscCode: [''],
+            grade: ['']
+        });
+    }
 
     // Computed filtered employees
     filteredEmployees = computed(() => {
@@ -65,8 +95,7 @@ export class EmpMasterComponent implements OnInit {
                     employee.bankAccount || '',
                     employee.bankName || '',
                     employee.ifscCode || '',
-                    employee.grade || '',
-                    employee.status || ''
+                    employee.grade || ''
                 ].map(field => field.toString().toLowerCase());
 
                 return searchableFields.some(field => field.includes(globalSearchTerm));
@@ -78,7 +107,6 @@ export class EmpMasterComponent implements OnInit {
         const roleFilter = this.filterRole();
         const departmentFilter = this.filterDepartment();
         const designationFilter = this.filterDesignation();
-        const statusFilter = this.filterStatus();
         const gradeFilter = this.filterGrade().toLowerCase();
         const pfNumberFilter = this.filterPfNumber().toLowerCase();
         const esiNumberFilter = this.filterEsiNumber().toLowerCase();
@@ -95,7 +123,6 @@ export class EmpMasterComponent implements OnInit {
             const matchesRole = !roleFilter || (employee.role && employee.role === roleFilter);
             const matchesDepartment = !departmentFilter || (employee.department && employee.department === departmentFilter);
             const matchesDesignation = !designationFilter || (employee.designation && employee.designation === designationFilter);
-            const matchesStatus = !statusFilter || (employee.status && employee.status === statusFilter);
             const matchesGrade = !gradeFilter || (employee.grade && employee.grade.toLowerCase().includes(gradeFilter));
             const matchesPfNumber = !pfNumberFilter || (employee.pfNumber && employee.pfNumber.toLowerCase().includes(pfNumberFilter));
             const matchesEsiNumber = !esiNumberFilter || (employee.esiNumber && employee.esiNumber.toLowerCase().includes(esiNumberFilter));
@@ -108,7 +135,7 @@ export class EmpMasterComponent implements OnInit {
             const matchesDateOfJoining = !dateOfJoiningFilter || (employee.dateOfJoining && employee.dateOfJoining.toLowerCase().includes(dateOfJoiningFilter));
 
             return matchesEmail && matchesRole && matchesDepartment && matchesDesignation &&
-                matchesStatus && matchesGrade && matchesPfNumber && matchesEsiNumber &&
+                matchesGrade && matchesPfNumber && matchesEsiNumber &&
                 matchesBankAccount && matchesBankName && matchesIfscCode && matchesFatherName &&
                 matchesMotherName && matchesDob && matchesDateOfJoining;
         });
@@ -129,8 +156,6 @@ export class EmpMasterComponent implements OnInit {
 
         return employees;
     });
-
-    constructor(private authService: AuthService) { }
 
     ngOnInit(): void {
         this.loadEmployees();
@@ -232,7 +257,6 @@ export class EmpMasterComponent implements OnInit {
         this.filterRole.set('');
         this.filterDepartment.set('');
         this.filterDesignation.set('');
-        this.filterStatus.set('');
         this.filterGrade.set('');
         this.filterPfNumber.set('');
         this.filterEsiNumber.set('');
@@ -243,5 +267,64 @@ export class EmpMasterComponent implements OnInit {
         this.filterMotherName.set('');
         this.filterDob.set('');
         this.filterDateOfJoining.set('');
+    }
+
+    // Modal methods
+    openAddEmployeeModal(): void {
+        this.showAddEmployeeModal.set(true);
+        this.addEmployeeForm.reset();
+        this.addEmployeeForm.patchValue({ role: 'employee' });
+        this.addEmployeeError.set(null);
+        this.addEmployeeSuccess.set(null);
+    }
+
+    closeAddEmployeeModal(): void {
+        this.showAddEmployeeModal.set(false);
+        this.addEmployeeForm.reset();
+        this.addEmployeeError.set(null);
+        this.addEmployeeSuccess.set(null);
+    }
+
+    addEmployee(): void {
+        if (this.addEmployeeForm.invalid) {
+            this.addEmployeeError.set('Please fill in all required fields');
+            return;
+        }
+
+        this.addEmployeeLoading.set(true);
+        this.addEmployeeError.set(null);
+
+        const formData: any = { ...this.addEmployeeForm.value };
+
+        // Remove empty values
+        Object.keys(formData).forEach(key => {
+            if (!formData[key] || formData[key].trim() === '') {
+                delete formData[key];
+            }
+        });
+
+        console.log('Adding employee with data:', formData);
+        console.log('Current user role:', this.authService.getUserRole());
+        console.log('Token:', this.authService.getToken());
+
+        this.authService.createEmployee(formData).subscribe({
+            next: () => {
+                this.addEmployeeSuccess.set('Employee added successfully!');
+                this.addEmployeeLoading.set(false);
+                this.addEmployeeForm.reset();
+                this.addEmployeeForm.patchValue({ role: 'employee' });
+
+                // Reload employees after a short delay
+                setTimeout(() => {
+                    this.loadEmployees();
+                    this.closeAddEmployeeModal();
+                }, 1500);
+            },
+            error: (err: any) => {
+                console.error('Error adding employee:', err);
+                this.addEmployeeError.set('Failed to add employee. Please try again.');
+                this.addEmployeeLoading.set(false);
+            }
+        });
     }
 } 

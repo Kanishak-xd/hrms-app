@@ -11,7 +11,7 @@ const { verifyToken, checkRole } = require('../middleware/auth');
 
 // POST /register
 router.post("/register", async (req, res) => {
-  const { email, password, fullName, role, ...rest } = req.body;
+  const { email, password, fullName, role, dob, dateOfJoining, ...rest } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -22,13 +22,41 @@ router.post("/register", async (req, res) => {
 
     const newUser = new User({
       email, password: hashedPassword, fullName, role: role || "employee",
-      status: "pending",
+      dob: dob ? new Date(dob) : undefined,
+      dateOfJoining: dateOfJoining ? new Date(dateOfJoining) : undefined,
       ...rest
     });
 
     await newUser.save();
 
-    res.status(201).json({ message: "Registration submitted for HR approval" });
+    res.status(201).json({ message: "Employee created successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// POST /employees - Create new employee (HR only)
+router.post("/employees", verifyToken, checkRole("hr", "admin"), async (req, res) => {
+  const { email, password, fullName, role, dob, dateOfJoining, ...rest } = req.body;
+
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
+      return res.status(400).json({ message: "User already exists" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      email, password: hashedPassword, fullName, role: role || "employee",
+      dob: dob ? new Date(dob) : undefined,
+      dateOfJoining: dateOfJoining ? new Date(dateOfJoining) : undefined,
+      ...rest
+    });
+
+    await newUser.save();
+
+    res.status(201).json({ message: "Employee created successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -43,10 +71,6 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ email });
     if (!user)
       return res.status(404).json({ message: "User not found" });
-
-    if (user.status !== "approved") {
-      return res.status(403).json({ message: "Account not yet approved by HR" });
-    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
@@ -64,19 +88,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
-// GET /pending
-router.get("/pending", verifyToken, checkRole("hr"), async (req, res) => {
-  try {
-    const pendingUsers = await User.find({ status: 'pending' });
-    res.json(pendingUsers);
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
 // GET /employees - Get all employees for Employee Master
-router.get("/employees", verifyToken, checkRole("hr"), async (req, res) => {
+router.get("/employees", verifyToken, checkRole("hr", "admin"), async (req, res) => {
   try {
     const employees = await User.find({}).select("-password");
     res.json(employees);
@@ -97,7 +110,7 @@ router.get("/employees/count", verifyToken, async (req, res) => {
 });
 
 // PUT /employee/:id - Update employee data
-router.put("/employee/:id", verifyToken, checkRole("hr"), async (req, res) => {
+router.put("/employee/:id", verifyToken, checkRole("hr", "admin"), async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
@@ -115,23 +128,6 @@ router.put("/employee/:id", verifyToken, checkRole("hr"), async (req, res) => {
     res.json(updatedEmployee);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-// PATCH /user/:id/status
-router.patch("/user/:id/status", verifyToken, checkRole("hr"), async (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-
-  if (!["approved", "rejected"].includes(status)) {
-    return res.status(400).json({ message: "Invalid status" });
-  }
-
-  try {
-    await User.findByIdAndUpdate(id, { status });
-    res.json({ message: `User status updated to ${status}` });
-  } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 });

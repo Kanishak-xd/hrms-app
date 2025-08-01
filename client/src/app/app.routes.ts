@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
-import { Register } from './pages/register/register';
 import { Login } from './pages/login/login';
 import { Dashboard } from './pages/dashboard/dashboard';
-import { HrPanelComponent } from './pages/hr-panel/hr-panel';
 import { EmpMasterComponent } from './pages/emp-master/emp-master';
 import { DeptMasterComponent } from './pages/dept-master/dept-master';
 import { DesigMasterComponent } from './pages/desig-master/desig-master';
@@ -13,7 +11,6 @@ import { publicGuard } from './guards/public.guard';
 
 export const routes: Routes = [
     // Public routes - only accessible when not logged in
-    { path: 'register', component: Register, canActivate: [publicGuard] },
     { path: 'login', component: Login, canActivate: [publicGuard] },
 
     // Protected routes with role-based access
@@ -21,7 +18,6 @@ export const routes: Routes = [
     { path: 'profile', loadComponent: () => import('./pages/profile/profile').then(m => m.Profile) },
 
     // HR routes - accessible by HR and Admin
-    { path: 'hr-panel', component: HrPanelComponent, canActivate: [roleGuard(['hr', 'admin'])] },
     { path: 'dept-master', component: DeptMasterComponent, canActivate: [roleGuard(['hr', 'admin'])] },
     { path: 'desig-master', component: DesigMasterComponent, canActivate: [roleGuard(['hr', 'admin'])] },
 

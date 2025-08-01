@@ -157,4 +157,8 @@ export class AuthService {
   updateEmployee(employeeId: string, employeeData: any): Observable<any> {
     return this.http.put(`/api/employee/${employeeId}`, employeeData);
   }
+
+  createEmployee(employeeData: any): Observable<any> {
+    return this.http.post('/api/employees', employeeData);
+  }
 }

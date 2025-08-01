@@ -48,16 +48,6 @@
                     Dashboard
                 </button>
 
-                <!-- HR Panel - HR and Admin only -->
-                <button *ngIf="canAccessHrPanel()" (click)="navigateTo('/hr-panel')"
-                    class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    HR Panel
-                </button>
-
                 <!-- Employee Master - HR and Admin only -->
                 <button *ngIf="canAccessEmployeeMaster()" (click)="navigateTo('/emp-master')"
                     class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200">
