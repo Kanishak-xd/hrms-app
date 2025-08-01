@@ -303,10 +303,6 @@ export class EmpMasterComponent implements OnInit {
             }
         });
 
-        console.log('Adding employee with data:', formData);
-        console.log('Current user role:', this.authService.getUserRole());
-        console.log('Token:', this.authService.getToken());
-
         this.authService.createEmployee(formData).subscribe({
             next: () => {
                 this.addEmployeeSuccess.set('Employee added successfully!');
@@ -321,7 +317,6 @@ export class EmpMasterComponent implements OnInit {
                 }, 1500);
             },
             error: (err: any) => {
-                console.error('Error adding employee:', err);
                 this.addEmployeeError.set('Failed to add employee. Please try again.');
                 this.addEmployeeLoading.set(false);
             }

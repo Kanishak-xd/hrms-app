@@ -156,7 +156,7 @@ router.get("/departments", verifyToken, async (req, res) => {
 });
 
 // POST /departments - Create new department
-router.post("/departments", verifyToken, checkRole(["hr", "admin"]), async (req, res) => {
+router.post("/departments", verifyToken, checkRole("hr", "admin"), async (req, res) => {
   const { departmentId, departmentName, description, status } = req.body;
 
   try {
@@ -181,7 +181,7 @@ router.post("/departments", verifyToken, checkRole(["hr", "admin"]), async (req,
 });
 
 // PUT /departments/:id - Update department
-router.put("/departments/:id", verifyToken, checkRole(["hr", "admin"]), async (req, res) => {
+router.put("/departments/:id", verifyToken, checkRole("hr", "admin"), async (req, res) => {
   const { id } = req.params;
   const { departmentName, description, status } = req.body;
 
@@ -203,7 +203,7 @@ router.put("/departments/:id", verifyToken, checkRole(["hr", "admin"]), async (r
 });
 
 // DELETE /departments/:id - Delete department
-router.delete("/departments/:id", verifyToken, checkRole(["hr", "admin"]), async (req, res) => {
+router.delete("/departments/:id", verifyToken, checkRole("hr", "admin"), async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -219,7 +219,7 @@ router.delete("/departments/:id", verifyToken, checkRole(["hr", "admin"]), async
 });
 
 // PATCH /departments/:id/status - Toggle department status
-router.patch("/departments/:id/status", verifyToken, checkRole(["hr", "admin"]), async (req, res) => {
+router.patch("/departments/:id/status", verifyToken, checkRole("hr", "admin"), async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -251,7 +251,7 @@ router.get("/designations", verifyToken, async (req, res) => {
 });
 
 // POST /designations - Create new designation
-router.post("/designations", verifyToken, checkRole(["hr", "admin"]), async (req, res) => {
+router.post("/designations", verifyToken, checkRole("hr", "admin"), async (req, res) => {
   const { designationId, designationName, departmentId, level, description, status } = req.body;
 
   try {
@@ -284,7 +284,7 @@ router.post("/designations", verifyToken, checkRole(["hr", "admin"]), async (req
 });
 
 // PUT /designations/:id - Update designation
-router.put("/designations/:id", verifyToken, checkRole(["hr", "admin"]), async (req, res) => {
+router.put("/designations/:id", verifyToken, checkRole("hr", "admin"), async (req, res) => {
   const { id } = req.params;
   const { designationName, departmentId, level, description, status } = req.body;
 
@@ -314,7 +314,7 @@ router.put("/designations/:id", verifyToken, checkRole(["hr", "admin"]), async (
 });
 
 // DELETE /designations/:id - Delete designation
-router.delete("/designations/:id", verifyToken, checkRole(["hr", "admin"]), async (req, res) => {
+router.delete("/designations/:id", verifyToken, checkRole("hr", "admin"), async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -330,7 +330,7 @@ router.delete("/designations/:id", verifyToken, checkRole(["hr", "admin"]), asyn
 });
 
 // PATCH /designations/:id/status - Toggle designation status
-router.patch("/designations/:id/status", verifyToken, checkRole(["hr", "admin"]), async (req, res) => {
+router.patch("/designations/:id/status", verifyToken, checkRole("hr", "admin"), async (req, res) => {
   const { id } = req.params;
 
   try {
