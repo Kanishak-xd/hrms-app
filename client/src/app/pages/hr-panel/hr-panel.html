@@ -9,22 +9,61 @@
     </div>
 
     <div *ngIf="pendingUsers.length > 0" class="grid gap-6">
-        <div *ngFor="let user of pendingUsers" class="border p-4 rounded shadow bg-white">
-            <p><strong>Name:</strong> {{ user.fullName }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Department:</strong> {{ user.department }}</p>
-            <p><strong>Designation:</strong> {{ user.designation }}</p>
+        <div *ngFor="let user of pendingUsers" class="border p-6 rounded shadow bg-white">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Personal Information -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Personal Information</h3>
+                    <p><strong>Full Name:</strong> {{ user.fullName }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Father's Name:</strong> {{ user.fatherName || 'Not provided' }}</p>
+                    <p><strong>Mother's Name:</strong> {{ user.motherName || 'Not provided' }}</p>
+                    <p><strong>Date of Birth:</strong> {{ user.dob || 'Not provided' }}</p>
+                    <p><strong>Date of Joining:</strong> {{ user.dateOfJoining || 'Not provided' }}</p>
+                </div>
 
-            <div class="mt-4 space-x-2">
-                <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-                    (click)="updateStatus(user._id, 'approved')">
-                    Approve
-                </button>
+                <!-- Employment Information -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Employment Information</h3>
+                    <p><strong>Department:</strong> {{ user.department || 'Not assigned' }}</p>
+                    <p><strong>Designation:</strong> {{ user.designation || 'Not assigned' }}</p>
+                    <p><strong>Grade:</strong> {{ user.grade || 'Not provided' }}</p>
+                    <p><strong>PF Number:</strong> {{ user.pfNumber || 'Not provided' }}</p>
+                    <p><strong>ESI Number:</strong> {{ user.esiNumber || 'Not provided' }}</p>
+                </div>
 
-                <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-                    (click)="updateStatus(user._id, 'rejected')">
-                    Reject
-                </button>
+                <!-- Banking Information -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Banking Information</h3>
+                    <p><strong>Bank Account No:</strong> {{ user.bankAccount || 'Not provided' }}</p>
+                    <p><strong>Bank Name:</strong> {{ user.bankName || 'Not provided' }}</p>
+                    <p><strong>IFSC Code:</strong> {{ user.ifscCode || 'Not provided' }}</p>
+                </div>
+
+                <!-- System Information -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">System Information</h3>
+                    <p><strong>User ID:</strong> {{ user._id }}</p>
+                    <p><strong>Status:</strong> <span
+                            class="ml-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-sm">Pending Approval</span>
+                    </p>
+                    <p><strong>Registration Date:</strong> {{ user.createdAt | date:'medium' }}</p>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t">
+                <div class="flex space-x-3">
+                    <button
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-medium transition-colors"
+                        (click)="updateStatus(user._id, 'approved')">
+                        Approve
+                    </button>
+                    <button
+                        class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-medium transition-colors"
+                        (click)="updateStatus(user._id, 'rejected')">
+                        Reject
+                    </button>
+                </div>
             </div>
         </div>
     </div>
