@@ -161,4 +161,8 @@ export class AuthService {
   createEmployee(employeeData: any): Observable<any> {
     return this.http.post('/api/employees', employeeData);
   }
+
+  deleteEmployee(employeeId: string): Observable<any> {
+    return this.http.delete(`/api/employee/${employeeId}`);
+  }
 }

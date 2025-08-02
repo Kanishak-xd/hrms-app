@@ -132,6 +132,23 @@ router.put("/employee/:id", verifyToken, checkRole("hr", "admin"), async (req, r
   }
 });
 
+// DELETE /employee/:id - Delete employee
+router.delete("/employee/:id", verifyToken, checkRole("hr", "admin"), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const employee = await User.findByIdAndDelete(id);
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    res.json({ message: "Employee deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // GET /me
 router.get("/me", verifyToken, async (req, res) => {
   try {

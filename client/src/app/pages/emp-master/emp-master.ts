@@ -322,4 +322,24 @@ export class EmpMasterComponent implements OnInit {
             }
         });
     }
+
+    deleteEmployee(employee: any): void {
+        if (confirm(`Are you sure you want to delete ${employee.fullName}? This action cannot be undone.`)) {
+            this.loading.set(true);
+            this.error.set(null);
+
+            this.authService.deleteEmployee(employee._id).subscribe({
+                next: () => {
+                    this.loading.set(false);
+                    alert('Employee deleted successfully!');
+                    this.loadEmployees(); // Reload the employee list
+                },
+                error: (err: any) => {
+                    this.loading.set(false);
+                    this.error.set('Failed to delete employee. Please try again.');
+                    console.error('Error deleting employee:', err);
+                }
+            });
+        }
+    }
 } 
